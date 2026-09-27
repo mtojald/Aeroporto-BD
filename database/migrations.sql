@@ -2,8 +2,8 @@
 -- 1. AEROPORTO
 -- =====================================================================
 
-create database aeroporto
-use aeroporto
+CREATE DATABASE IF NOT EXISTS aeroporto;
+USE aeroporto;
 
 CREATE TABLE Aeroporto (
     cod_iata    VARCHAR(3)   NOT NULL,
@@ -270,7 +270,7 @@ CREATE TABLE Bilhete (
 CREATE TABLE Bagagem (
     num_etiqueta           INT NOT NULL,
     fk_Bilhete_cod_bilhete INT NOT NULL,
-    peso_kg                DECIMAL(5,2) check (peso_kg < 10),
+    peso_kg                DECIMAL(5,2) CHECK (peso_kg > 0 AND peso_kg <= 32),
     CONSTRAINT pk_bagagem PRIMARY KEY (num_etiqueta, fk_Bilhete_cod_bilhete),
     CONSTRAINT fk_bagagem_bilhete FOREIGN KEY (fk_Bilhete_cod_bilhete)
         REFERENCES Bilhete (cod_bilhete)

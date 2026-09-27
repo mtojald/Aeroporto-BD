@@ -9,7 +9,7 @@
 -- 1. AEROPORTO
 -- =====================================================================
 
-use aeroporto
+USE aeroporto;
 
 INSERT INTO Aeroporto (cod_iata, nome, cidade, pais) VALUES
 ('REC', 'Aeroporto Internacional do Recife/Guararapes', 'Recife', 'Brasil'),

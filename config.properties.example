@@ -1,0 +1,7 @@
+# Copie este arquivo para "config.properties" e ajuste com os dados do SEU MySQL.
+# (config.properties fica fora do git para ninguém subir a própria senha.)
+db.url=jdbc:mysql://localhost:3306/aeroporto?useSSL=false&allowPublicKeyRetrieval=true
+db.user=root
+db.password=
+
+server.port=8080

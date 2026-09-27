@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aeroporto do Recife — Gestão</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="marca">
+      <span class="logo" aria-hidden="true">✈</span>
+      <div>
+        <h1>Aeroporto Internacional do Recife</h1>
+        <p>Sistema de gestão de operações</p>
+      </div>
+    </div>
+    <nav class="abas" role="tablist">
+      <button class="aba ativa" data-aba="passageiros" role="tab">Passageiros</button>
+      <button class="aba" data-aba="voos" role="tab">Voos</button>
+      <!-- Novas abas (Consultas, Dashboard...) entram aqui com data-aba="..." -->
+    </nav>
+  </header>
+
+  <main>
+    <!-- ============================ PASSAGEIROS ============================ -->
+    <section id="aba-passageiros" class="painel">
+      <div class="cartao">
+        <h2 id="titulo-form-passageiro">Novo passageiro</h2>
+        <form id="form-passageiro" class="formulario" autocomplete="off">
+          <label>CPF*
+            <input name="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
+          </label>
+          <label>Nome*
+            <input name="primeiro_nome" required maxlength="50">
+          </label>
+          <label>Sobrenome*
+            <input name="sobrenome" required maxlength="50">
+          </label>
+          <label>Data de nascimento
+            <input name="data_nasci" type="date">
+          </label>
+          <label>E-mail
+            <input name="email" type="email" maxlength="100">
+          </label>
+          <label>Telefones
+            <input name="telefones" placeholder="Separe por vírgula: 8199999…, 8133…">
+          </label>
+          <div class="acoes">
+            <button type="submit" class="botao primario">Salvar</button>
+            <button type="button" class="botao" data-cancelar>Cancelar edição</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <div class="cabecalho-tabela">
+          <h2>Passageiros cadastrados <span class="contador" id="contador-passageiros"></span></h2>
+          <input type="search" class="busca" id="busca-passageiros" placeholder="Buscar por nome, CPF ou e-mail">
+        </div>
+        <div class="tabela-rolagem">
+          <table>
+            <thead>
+              <tr><th>CPF</th><th>Nome</th><th>Nascimento</th><th>E-mail</th><th>Telefones</th><th class="num">Bilhetes</th><th></th></tr>
+            </thead>
+            <tbody id="tabela-passageiros"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================ VOOS ================================ -->
+    <section id="aba-voos" class="painel" hidden>
+      <div class="cartao">
+        <h2 id="titulo-form-voo">Novo voo</h2>
+        <form id="form-voo" class="formulario" autocomplete="off">
+          <label>Número do voo*
+            <input name="num_voo" type="number" min="1" required>
+          </label>
+          <label>Data*
+            <input name="data_voo" type="date" required>
+          </label>
+          <label>Partida
+            <input name="hora_partida" type="time">
+          </label>
+          <label>Chegada
+            <input name="hora_chegada" type="time">
+          </label>
+          <label>Status*
+            <select name="status" required>
+              <option>Agendado</option>
+              <option>Confirmado</option>
+              <option>Embarcando</option>
+              <option>Atrasado</option>
+              <option>Cancelado</option>
+              <option>Concluído</option>
+            </select>
+          </label>
+          <label>Aeronave*
+            <select name="aeronave" required></select>
+          </label>
+          <label>Origem*
+            <select name="origem" required></select>
+          </label>
+          <label>Destino*
+            <select name="destino" required></select>
+          </label>
+          <label>Portão*
+            <select name="portao" required></select>
+          </label>
+          <label>Piloto comandante*
+            <select name="piloto" required></select>
+          </label>
+          <label>Voo de conexão
+            <select name="voo_conexao"></select>
+          </label>
+          <div class="acoes">
+            <button type="submit" class="botao primario">Salvar</button>
+            <button type="button" class="botao" data-cancelar>Cancelar edição</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cartao">
+        <div class="cabecalho-tabela">
+          <h2>Voos cadastrados <span class="contador" id="contador-voos"></span></h2>
+          <input type="search" class="busca" id="busca-voos" placeholder="Buscar por número, cidade, status…">
+        </div>
+        <div class="tabela-rolagem">
+          <table>
+            <thead>
+              <tr><th class="num">Voo</th><th>Data</th><th>Horário</th><th>Rota</th><th>Aeronave</th><th>Portão</th><th>Comandante</th><th>Conexão</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="tabela-voos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
