@@ -271,10 +271,110 @@ const voos = (() => {
 })();
 
 // =====================================================================
+// DASHBOARD 
+// =====================================================================
+
+const dashboard = (() => {
+  const graficos = {}; // guarda os gráficos para destruir antes de redesenhar
+
+  const moeda = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const paleta = ['#0b5cad', '#e08a1e', '#1e8449', '#c0392b', '#7d3c98', '#17a2b8', '#8d6e63'];
+
+  function desenhar(id, tipo, rotulos, valores, { legenda = false, cor = null, opcoes = {} } = {}) {
+    graficos[id]?.destroy();
+    const cores = cor ?? (tipo === 'doughnut' ? paleta : paleta[0]);
+    graficos[id] = new Chart(document.getElementById(id), {
+      type: tipo,
+      data: { labels: rotulos, datasets: [{ data: valores, backgroundColor: cores, borderColor: cores, borderWidth: tipo === 'line' ? 2 : 0, tension: .25 }] },
+      options: { maintainAspectRatio: false, plugins: { legend: { display: legenda } }, ...opcoes },
+    });
+  }
+
+  function cartao(rotulo, valor) {
+    return el('div', { class: 'indicador' }, el('span', { class: 'valor' }, valor), el('span', { class: 'rotulo' }, rotulo));
+  }
+
+  async function carregar() {
+    try {
+      const d = await api('GET', '/api/dashboard');
+      Chart.defaults.color = getComputedStyle(document.body).getPropertyValue('--texto-suave') || '#5d6b7c';
+
+      // indicadores (cards)
+      const i = d.indicadores;
+      document.getElementById('indicadores').replaceChildren(
+        cartao('Voos', i.voos), cartao('Passageiros', i.passageiros),
+        cartao('Aeronaves', i.aeronaves), cartao('Receita total', moeda(i.receita)));
+
+      // gráficos de séries
+      desenhar('grafico-status', 'doughnut', d.voosPorStatus.rotulos, d.voosPorStatus.valores, { legenda: true });
+      desenhar('grafico-receita', 'bar', d.receitaPorCompanhia.rotulos, d.receitaPorCompanhia.valores);
+      desenhar('grafico-dia', 'line', d.voosPorDia.rotulos, d.voosPorDia.valores,
+               { opcoes: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+      desenhar('grafico-ocupacao', 'bar', d.ocupacaoPorVoo.rotulos, d.ocupacaoPorVoo.valores,
+               { cor: paleta[1], opcoes: { scales: { y: { beginAtZero: true } } } });
+
+      // estatística descritiva + histograma do preço
+      const e = d.estatisticasPreco;
+      document.getElementById('estatisticas').replaceChildren(
+        cartao('n (bilhetes)', e.n), cartao('Média', moeda(e.media ?? 0)), cartao('Mediana', moeda(e.mediana ?? 0)),
+        cartao('Desvio padrão', moeda(e.desvioPadrao ?? 0)), cartao('Mínimo', moeda(e.minimo ?? 0)), cartao('Máximo', moeda(e.maximo ?? 0)));
+      desenhar('grafico-histograma', 'bar', d.histogramaPreco.rotulos, d.histogramaPreco.valores,
+               { cor: paleta[2], opcoes: { scales: { y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Frequência' } },
+                                                    x: { title: { display: true, text: 'Faixa de preço' } } } } });
+    } catch (e) {
+      avisar(e.message, true);
+    }
+  }
+
+  return { carregar };
+})();
+
+// =====================================================================
+// CONSULTAS  (GET /api/consultas -> texto do SQL + resultado)
+// =====================================================================
+
+const consultas = (() => {
+  async function carregar() {
+    const lista = document.getElementById('lista-consultas');
+    try {
+      const dados = await api('GET', '/api/consultas');
+      document.getElementById('contador-consultas').textContent = `(${dados.length})`;
+      lista.replaceChildren(...dados.map(cartaoConsulta));
+    } catch (e) {
+      avisar(e.message, true);
+    }
+  }
+
+  function cartaoConsulta(c) {
+    const resultado = c.erro
+      ? el('p', { class: 'vazio' }, `Erro: ${c.erro}`)
+      : el('div', { class: 'tabela-rolagem' }, el('table', {},
+          el('thead', {}, el('tr', {}, ...c.colunas.map((n) => el('th', {}, n)))),
+          el('tbody', {}, ...(c.linhas.length
+            ? c.linhas.map((l) => el('tr', {}, ...l.map((v) => el('td', {}, v ?? '—'))))
+            : [linhaVazia(c.colunas.length, 'Nenhum resultado')]))));
+
+    return el('div', { class: 'cartao consulta' },
+      el('h2', {}, `${c.id}. ${c.titulo} `, el('span', { class: 'contador' }, c.linhas ? `${c.linhas.length} linha(s)` : '')),
+      el('p', { class: 'suave' }, c.pergunta),
+      el('p', {}, el('span', { class: 'selo' }, 'Conceitos'), ` ${c.conceitos}`),
+      el('details', {}, el('summary', {}, 'Ver SQL'), el('pre', { class: 'sql' }, c.sql)),
+      resultado);
+  }
+
+  return { carregar };
+})();
+
+// =====================================================================
 // ABAS
 // =====================================================================
 
-const carregadores = { passageiros: passageiros.carregar, voos: voos.carregar };
+const carregadores = {
+  passageiros: passageiros.carregar,
+  voos: voos.carregar,
+  dashboard: dashboard.carregar,
+  consultas: consultas.carregar,
+};
 
 function abrirAba(nome) {
   const botao = document.querySelector(`.aba[data-aba="${nome}"]`) || document.querySelector('.aba');

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aeroporto do Recife — Gestão</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
   <header class="topo">
@@ -18,10 +19,39 @@
     <nav class="abas" role="tablist">
       <button class="aba ativa" data-aba="passageiros" role="tab">Passageiros</button>
       <button class="aba" data-aba="voos" role="tab">Voos</button>
-      <!-- Novas abas (Consultas, Dashboard...) entram aqui com data-aba="..." -->
+      <button class="aba" data-aba="dashboard" role="tab">Dashboard</button>
+      <button class="aba" data-aba="consultas" role="tab">Consultas</button>
     </nav>
   </header>
 
+    <!-- ============================ DASHBOARD ============================ -->
+    <section id="aba-dashboard" class="painel" hidden>
+      <div class="indicadores" id="indicadores"></div>
+
+      <div class="grade-graficos">
+        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas id="grafico-status"></canvas></div></div>
+        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas id="grafico-receita"></canvas></div></div>
+        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas id="grafico-dia"></canvas></div></div>
+        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas id="grafico-ocupacao"></canvas></div></div>
+      </div>
+
+      <div class="cartao">
+        <h2>Estatística descritiva — preço dos bilhetes</h2>
+        <div class="indicadores pequeno" id="estatisticas"></div>
+        <div class="caixa-grafico alta"><canvas id="grafico-histograma"></canvas></div>
+        <p class="suave">Histograma com classes de mesma amplitude (nº de classes = ⌈√n⌉, entre 3 e 8).</p>
+      </div>
+    </section>
+
+    <!-- ============================ CONSULTAS ============================ -->
+    <section id="aba-consultas" class="painel" hidden>
+      <div class="cartao">
+        <h2>Consultas SQL <span class="contador" id="contador-consultas"></span></h2>
+        <p class="suave">Cada consulta é SQL puro enviado ao MySQL (o texto também está em <code>database/consultas.sql</code>).</p>
+      </div>
+      <div id="lista-consultas" class="lista-cartoes"></div>
+    </section>
+  
   <main>
     <!-- ============================ PASSAGEIROS ============================ -->
     <section id="aba-passageiros" class="painel">
@@ -140,6 +170,8 @@
 
   <div id="aviso" class="aviso" role="status" aria-live="polite" hidden></div>
 
+  <script src="vendor/chart.umd.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
+

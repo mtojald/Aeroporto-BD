@@ -6,6 +6,8 @@ import aeroporto.web.OpcoesHandler;
 import aeroporto.web.PassageiroHandler;
 import aeroporto.web.StaticHandler;
 import aeroporto.web.VooHandler;
+import aeroporto.web.ConsultaHandler;
+import aeroporto.web.DashboardHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -25,6 +27,8 @@ public class Main {
         server.createContext("/api/passageiros", new PassageiroHandler());
         server.createContext("/api/voos", new VooHandler());
         server.createContext("/api/opcoes", new OpcoesHandler());
+        server.createContext("/api/consultas", new ConsultaHandler());
+        server.createContext("/api/dashboard", new DashboardHandler());
         // Interface (HTML/CSS/JS)
         server.createContext("/", new StaticHandler(Path.of("web")));
         server.setExecutor(Executors.newFixedThreadPool(8));

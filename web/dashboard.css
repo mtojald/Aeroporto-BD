@@ -1,0 +1,24 @@
+/* ---------- Dashboard e Consultas (Etapa 3) ---------- */
+.indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.indicador {
+  background: var(--cartao); border: 1px solid var(--borda); border-radius: var(--raio);
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;
+}
+.indicador .valor { font-size: 26px; font-weight: 700; color: var(--primaria); }
+.indicador .rotulo { font-size: 13px; color: var(--texto-suave); }
+.indicadores.pequeno { margin-bottom: 16px; }
+.indicadores.pequeno .indicador { padding: 10px 14px; box-shadow: none; }
+.indicadores.pequeno .valor { font-size: 19px; }
+
+.grade-graficos { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+.caixa-grafico { position: relative; height: 280px; }
+.caixa-grafico.alta { height: 320px; }
+
+.consulta details { margin: 10px 0; }
+.consulta summary { cursor: pointer; color: var(--primaria); font-size: 14px; }
+.consulta .sql {
+  background: #0f1720; color: #d7e6f5; padding: 14px; border-radius: 8px;
+  font-size: 13px; overflow-x: auto; margin: 8px 0 0;
+}
+.consulta .selo { margin-right: 4px; }
+.lista-cartoes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
