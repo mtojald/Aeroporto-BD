@@ -4,7 +4,7 @@
 
 ## Integrantes
 
- -Mariana Maliu
+- Mariana Maliu
 - Arthur Coelho
 - Miguel Tojal
 - Raul Maia
