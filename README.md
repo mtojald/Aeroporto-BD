@@ -48,7 +48,8 @@ Interface web com 4 abas:
 ## Estrutura
 
 ```
-database/   migrations.sql, queries.sql e consultas.sql (as 10 consultas)
+database/   migrations.sql, queries.sql, consultas.sql (as 10 consultas)
+            indices.sql, consultas_avancadas.sql, views.sql
 src/        código Java (db, dao, web)
 web/        interface (index.html, app.js, CSS e Chart.js)
 ```
@@ -64,3 +65,4 @@ Usamos IA como apoio para revisar o modelo, rascunhar as consultas e o dashboard
 | 1. Modelagem | `Projeto BD - Aeroporto.pdf` |
 | 2. Tabelas e dados | `database/migrations.sql` e `database/queries.sql` |
 | 3. Interface e dashboard | `src/`, `web/` e `database/consultas.sql` |
+| 4. Índices, consultas e views | `database/indices.sql`, `consultas_avancadas.sql`, `views.sql` |
