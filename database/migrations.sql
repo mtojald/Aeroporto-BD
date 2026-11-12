@@ -197,6 +197,18 @@ CREATE TABLE Voo (
 );
 
 -- =====================================================================
+-- 11.1 LOG_VOO [histórico de alterações de status]
+-- =====================================================================
+
+CREATE TABLE Log_Voo (
+    id_log INT AUTO_INCREMENT PRIMARY KEY,
+    num_voo INT NOT NULL,
+    status_anterior VARCHAR(20),
+    status_novo VARCHAR(20),
+    data_alteracao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================================================================
 -- 12. ESCALA [relacionamento N:N entre Funcionario e Voo]
 -- =====================================================================
 CREATE TABLE Escala (
