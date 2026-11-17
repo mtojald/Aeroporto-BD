@@ -8,6 +8,7 @@ import aeroporto.web.StaticHandler;
 import aeroporto.web.VooHandler;
 import aeroporto.web.ConsultaHandler;
 import aeroporto.web.DashboardHandler;
+import aeroporto.web.RecursosHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class Main {
         server.createContext("/api/opcoes", new OpcoesHandler());
         server.createContext("/api/consultas", new ConsultaHandler());
         server.createContext("/api/dashboard", new DashboardHandler());
+        server.createContext("/api/recursos", new RecursosHandler());
         // Interface (HTML/CSS/JS)
         server.createContext("/", new StaticHandler(Path.of("web")));
         server.setExecutor(Executors.newFixedThreadPool(8));

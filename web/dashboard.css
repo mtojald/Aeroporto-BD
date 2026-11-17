@@ -1,24 +1,196 @@
-/* ---------- Dashboard e Consultas (Etapa 3) ---------- */
-.indicadores { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.indicadores {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px
+}
+
 .indicador {
-  background: var(--cartao); border: 1px solid var(--borda); border-radius: var(--raio);
-  padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;
+  background:var(--cartao);
+  border:1px solid var(--borda);
+  border-radius:var(--raio);
+  padding:22px;
+  display:flex;
+  flex-direction:column-reverse;
+  justify-content:space-between;
+  gap:14px;
+  min-width:0
 }
-.indicador .valor { font-size: 26px; font-weight: 700; color: var(--primaria); }
-.indicador .rotulo { font-size: 13px; color: var(--texto-suave); }
-.indicadores.pequeno { margin-bottom: 16px; }
-.indicadores.pequeno .indicador { padding: 10px 14px; box-shadow: none; }
-.indicadores.pequeno .valor { font-size: 19px; }
 
-.grade-graficos { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
-.caixa-grafico { position: relative; height: 280px; }
-.caixa-grafico.alta { height: 320px; }
-
-.consulta details { margin: 10px 0; }
-.consulta summary { cursor: pointer; color: var(--primaria); font-size: 14px; }
-.consulta .sql {
-  background: #0f1720; color: #d7e6f5; padding: 14px; border-radius: 8px;
-  font-size: 13px; overflow-x: auto; margin: 8px 0 0;
+.indicador .valor {
+  font-size:28px;
+  letter-spacing:-.04em;
+  font-weight:650;
+  color:var(--texto);
+  overflow-wrap:anywhere;
+  font-variant-numeric:tabular-nums
 }
-.consulta .selo { margin-right: 4px; }
-.lista-cartoes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+
+.indicador .rotulo {
+  font-size:12px;
+  color:var(--texto-suave)
+}
+
+.indicadores>.indicador:first-child {
+  background:#176b68;
+  border-color:#176b68
+}
+
+.indicadores>.indicador:first-child .valor {
+  color:white
+}
+
+.indicadores>.indicador:first-child .rotulo {
+  color:#c6e6df
+}
+
+.indicadores.pequeno {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin-bottom:24px;
+  gap:10px
+}
+
+.indicadores.pequeno .indicador {
+  background:#f7f9fc;
+  border:0;
+  padding:14px 18px;
+  gap:8px
+}
+
+.indicadores.pequeno .valor {
+  font-size:21px;
+  color:var(--texto)
+}
+
+.indicadores.pequeno .rotulo {
+  color:var(--texto-suave)
+}
+
+.grade-graficos {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:22px
+}
+
+.caixa-grafico {
+  position:relative;
+  height:270px
+}
+
+.caixa-grafico.alta {
+  height:300px
+}
+
+.lista-cartoes {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:16px
+}
+
+.consulta details,.recurso details {
+  margin:16px 0
+}
+
+.consulta summary,.recurso summary {
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  color:var(--primaria)
+}
+
+.sql {
+  background:#14283c;
+  color:#d3e6ee;
+  padding:20px;
+  border-radius:10px;
+  font:12px/1.8 Consolas,monospace;
+  overflow:auto;
+  max-height:420px;
+  margin:12px 0
+}
+
+.consulta>summary {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  list-style:none;
+  color:var(--texto);
+  font-size:15px
+}
+
+.consulta>summary:before {
+  content:'+';
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:#eef6f5;
+  color:var(--primaria);
+  width:30px;
+  height:30px;
+  flex-shrink:0
+}
+
+.consulta[open]>summary:before {
+  content:'−'
+}
+
+.consulta>summary .contador {
+  margin-left:auto;
+  white-space:nowrap
+}
+
+.consulta>summary strong {
+  font-weight:600
+}
+
+.consulta>summary::marker {
+  content:''
+}
+
+.consulta .selo {
+  margin-right:8px
+}
+
+@media(max-width:1100px) {
+  .indicadores {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+
+  .indicador .valor {
+    font-size:25px
+  }
+
+
+}
+
+@media(max-width:760px) {
+  .grade-graficos {
+    grid-template-columns:1fr
+  }
+
+  .indicadores {
+    gap:10px
+  }
+
+  .indicador {
+    padding:16px
+  }
+
+  .indicadores.pequeno {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+
+  .indicador .valor {
+    font-size:22px
+  }
+
+  .consulta>summary {
+    font-size:13px;
+    gap:10px
+  }
+
+  .consulta>summary .contador {
+    display:none
+  }
+
+
+}

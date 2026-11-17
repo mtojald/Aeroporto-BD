@@ -84,12 +84,17 @@ function controlarFormulario({ form, titulo, chave, textoNovo, textoEditar, aoSa
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const dados = Object.fromEntries(new FormData(form));
+    const salvar = form.querySelector('[type=submit]');
+    if (salvar.disabled) return;
+    salvar.disabled = true;
     try {
       const r = await aoSalvar(dados, emEdicao);
       avisar(r.mensagem);
       modoNovo();
     } catch (e) {
       avisar(e.message, true);
+    } finally {
+      salvar.disabled = false;
     }
   });
 
@@ -126,7 +131,7 @@ const passageiros = (() => {
       const r = cpfEditado
         ? await api('PUT', `/api/passageiros/${encodeURIComponent(cpfEditado)}`, dados)
         : await api('POST', '/api/passageiros', dados);
-      await carregar();
+      await carregar().catch(e => avisar('Registro salvo, mas a listagem não pôde ser atualizada: ' + e.message, true));
       return r;
     },
   });
@@ -147,8 +152,9 @@ const passageiros = (() => {
     try {
       lista = await api('GET', '/api/passageiros');
     } catch (e) {
+      document.getElementById('contador-passageiros').textContent = '';
       tbody.replaceChildren(linhaVazia(7, e.message));
-      return;
+      throw e;
     }
     document.getElementById('contador-passageiros').textContent = `(${lista.length})`;
     if (!lista.length) {
@@ -244,8 +250,9 @@ const voos = (() => {
     try {
       [lista] = await Promise.all([api('GET', '/api/voos'), carregarOpcoes()]);
     } catch (e) {
+      document.getElementById('contador-voos').textContent = '';
       tbody.replaceChildren(linhaVazia(10, e.message));
-      return;
+      throw e;
     }
     document.getElementById('contador-voos').textContent = `(${lista.length})`;
     if (!lista.length) {
@@ -278,7 +285,7 @@ const dashboard = (() => {
   const graficos = {}; // guarda os gráficos para destruir antes de redesenhar
 
   const moeda = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  const paleta = ['#0b5cad', '#e08a1e', '#1e8449', '#c0392b', '#7d3c98', '#17a2b8', '#8d6e63'];
+  const paleta = ['#238780', '#deb56a', '#6c94b8', '#c77881', '#9591bd', '#69b3a2', '#b6c7d5'];
 
   function desenhar(id, tipo, rotulos, valores, { legenda = false, cor = null, opcoes = {} } = {}) {
     graficos[id]?.destroy();
@@ -286,7 +293,7 @@ const dashboard = (() => {
     graficos[id] = new Chart(document.getElementById(id), {
       type: tipo,
       data: { labels: rotulos, datasets: [{ data: valores, backgroundColor: cores, borderColor: cores, borderWidth: tipo === 'line' ? 2 : 0, tension: .25 }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { display: legenda } }, ...opcoes },
+      options: { maintainAspectRatio: false, plugins: { legend: { display: legenda, position: 'bottom', labels: { usePointStyle: true, padding: 20 } } }, ...opcoes },
     });
   }
 
@@ -297,6 +304,8 @@ const dashboard = (() => {
   async function carregar() {
     try {
       const d = await api('GET', '/api/dashboard');
+      Chart.defaults.font.family = 'Segoe UI, sans-serif';
+      Chart.defaults.borderColor = '#edf0f5';
       Chart.defaults.color = getComputedStyle(document.body).getPropertyValue('--texto-suave') || '#5d6b7c';
 
       // indicadores (cards)
@@ -322,7 +331,11 @@ const dashboard = (() => {
                { cor: paleta[2], opcoes: { scales: { y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Frequência' } },
                                                     x: { title: { display: true, text: 'Faixa de preço' } } } } });
     } catch (e) {
-      avisar(e.message, true);
+      document.getElementById('indicadores').replaceChildren();
+      document.getElementById('estatisticas').replaceChildren();
+      Object.values(graficos).forEach(g => g.destroy());
+      Object.keys(graficos).forEach(k => delete graficos[k]);
+      throw e;
     }
   }
 
@@ -341,7 +354,9 @@ const consultas = (() => {
       document.getElementById('contador-consultas').textContent = `(${dados.length})`;
       lista.replaceChildren(...dados.map(cartaoConsulta));
     } catch (e) {
-      avisar(e.message, true);
+      document.getElementById('contador-consultas').textContent = '';
+      lista.replaceChildren(el('p', { class: 'vazio' }, 'Não foi possível carregar as consultas.'));
+      throw e;
     }
   }
 
@@ -354,8 +369,8 @@ const consultas = (() => {
             ? c.linhas.map((l) => el('tr', {}, ...l.map((v) => el('td', {}, v ?? '—'))))
             : [linhaVazia(c.colunas.length, 'Nenhum resultado')]))));
 
-    return el('div', { class: 'cartao consulta' },
-      el('h2', {}, `${c.id}. ${c.titulo} `, el('span', { class: 'contador' }, c.linhas ? `${c.linhas.length} linha(s)` : '')),
+    return el('details', { class: 'cartao consulta' },
+      el('summary', {}, el('strong', {}, `${String(c.id).padStart(2, '0')}. ${c.titulo}`), el('span', { class: 'contador' }, c.linhas ? `${c.linhas.length} linha(s)` : '')),
       el('p', { class: 'suave' }, c.pergunta),
       el('p', {}, el('span', { class: 'selo' }, 'Conceitos'), ` ${c.conceitos}`),
       el('details', {}, el('summary', {}, 'Ver SQL'), el('pre', { class: 'sql' }, c.sql)),
@@ -369,23 +384,135 @@ const consultas = (() => {
 // ABAS
 // =====================================================================
 
+const recursos = (() => {
+  let dados = [];
+  let filtro = 'todos';
+  const descricoes = {
+    vw_voo_completo: 'Voos, companhias, aeronaves, rotas e comandantes em uma única visão.',
+    vw_passageiro_resumo: 'Bilhetes, gastos e histórico de companhias por passageiro.',
+    atualizar_status_voo: 'Altere o status de um voo para Confirmado ou Cancelado. As regras dos triggers são aplicadas pelo banco.',
+    verificar_conexoes_passageiros: 'Analise os intervalos das conexões: inviável, apertada ou viável.',
+    registrar_alteracao_status_voo: 'Registra automaticamente no Log_Voo as mudanças de status após a atualização de um voo.',
+    verificar_manutencao_voo: 'Impede a confirmação de um voo quando a aeronave está em manutenção na data escolhida.',
+    calcular_duracao_voo: 'Consulte a duração de um voo em minutos.',
+    calcular_taxa_ocupacao_voo: 'Consulte o percentual de ocupação de um voo.'
+  };
+  const tipos = { views: 'View', procedures: 'Procedure', triggers: 'Trigger automático', functions: 'Função' };
+
+  function tabela(r, trigger) {
+    return el('div', { class: 'tabela-rolagem' }, el('table', {},
+      el('thead', {}, el('tr', {}, ...r.colunas.map(c => el('th', {}, c)))),
+      el('tbody', {}, ...(r.linhas.length ? r.linhas.map(l => el('tr', {}, ...l.map(v => el('td', {}, v ?? '—')))) :
+        [linhaVazia(r.colunas.length, trigger ? 'Trigger não instalado ou não visível ao usuário conectado.' : 'Nenhum resultado.')]))));
+  }
+
+  function cartao(r) {
+    const resultado = el('div', { class: 'resultado', 'aria-live': 'polite' });
+    const form = el('form', { class: 'formulario' });
+    if (r.nome === 'atualizar_status_voo' || r.tipo === 'functions') {
+      form.append(el('label', {}, 'Número do voo', el('input', { name: 'voo', type: 'number', min: '1', required: '', placeholder: 'Informe o número' })));
+    }
+    if (r.nome === 'atualizar_status_voo') form.append(el('label', {}, 'Novo status', el('select', { name: 'status' },
+      el('option', { value: 'Confirmado' }, 'Confirmado'), el('option', { value: 'Cancelado' }, 'Cancelado'))));
+    const botao = el('button', { type: 'submit', class: 'botao primario' }, r.tipo === 'triggers' ? 'Verificar no banco' : r.tipo === 'views' ? 'Visualizar dados' : r.nome === 'atualizar_status_voo' ? 'Atualizar status' : 'Executar');
+    const acoes = el('div', { class: 'acoes' }, botao);
+    async function executar(nome, valores, origem) {
+      origem.disabled = true;
+      resultado.replaceChildren(el('p', { class: 'suave' }, 'Consultando o banco…'));
+      try {
+        const resposta = await api('POST', '/api/recursos', { nome, ...valores });
+        resultado.replaceChildren(el('p', { class: 'suave' }, resposta.mensagem), ...resposta.resultados.map(t => tabela(t, r.tipo === 'triggers' && nome !== 'historico_status')));
+      } catch (e) {
+        resultado.replaceChildren(el('p', { class: 'vazio' }, e.message));
+      } finally { origem.disabled = false; }
+    }
+    form.addEventListener('submit', ev => {
+      ev.preventDefault();
+      const valores = Object.fromEntries(new FormData(form));
+      if (r.nome === 'atualizar_status_voo' && !confirm('Atualizar o voo ' + valores.voo + ' para ' + valores.status + '?')) return;
+      executar(r.nome, valores, botao);
+    });
+    if (r.nome === 'registrar_alteracao_status_voo') {
+      const historico = el('button', { type: 'button', class: 'botao' }, 'Ver histórico de status');
+      historico.addEventListener('click', () => executar('historico_status', {}, historico));
+      acoes.append(historico);
+    }
+    form.append(acoes);
+    return el('article', { class: 'cartao recurso' },
+      el('div', { class: 'recurso-cabecalho' }, el('h2', {}, r.nome), el('span', { class: 'selo' }, tipos[r.tipo])),
+      el('p', { class: 'suave' }, descricoes[r.nome] || r.nome),
+      el('details', {}, el('summary', {}, 'Ver definição SQL · ' + r.arquivo), el('pre', { class: 'sql' }, r.sql)),
+      form, resultado);
+  }
+  function mostrar() {
+    document.getElementById('lista-recursos').replaceChildren(...dados.filter(r => filtro === 'todos' || r.tipo === filtro).map(cartao));
+  }
+  document.querySelectorAll('[data-tipo]').forEach(b => b.addEventListener('click', () => {
+    filtro = b.dataset.tipo;
+    document.querySelectorAll('[data-tipo]').forEach(outro => {
+      outro.classList.toggle('ativo', outro === b);
+      outro.setAttribute('aria-pressed', outro === b);
+    });
+    mostrar();
+  }));
+  return { async carregar() {
+    dados = await api('GET', '/api/recursos');
+    document.getElementById('contador-recursos').textContent = dados.length + ' recursos';
+    mostrar();
+  } };
+})();
+
 const carregadores = {
   passageiros: passageiros.carregar,
   voos: voos.carregar,
   dashboard: dashboard.carregar,
   consultas: consultas.carregar,
+  recursos: recursos.carregar,
 };
-
-function abrirAba(nome) {
-  const botao = document.querySelector(`.aba[data-aba="${nome}"]`) || document.querySelector('.aba');
-  document.querySelectorAll('.aba').forEach((b) => b.classList.toggle('ativa', b === botao));
-  document.querySelectorAll('.painel').forEach((p) => (p.hidden = p.id !== `aba-${botao.dataset.aba}`));
-  history.replaceState(null, '', `#${botao.dataset.aba}`);
-  carregadores[botao.dataset.aba]?.();
+const paginas = {
+  dashboard: ['Visão geral', 'Indicadores, desempenho dos voos e estatística dos bilhetes.'],
+  passageiros: ['Passageiros', 'Cadastre passageiros e mantenha os dados de contato atualizados.'],
+  voos: ['Voos', 'Organize rotas, horários, aeronaves e equipes de cada operação.'],
+  consultas: ['Consultas', 'Explore as 10 análises de dados disponíveis no projeto.'],
+  recursos: ['Recursos do banco', 'Views, procedures, triggers e funções em um só lugar.']
+};
+let abaAtual = 'dashboard';
+let carregamento = 0;
+async function atualizar() {
+  const versao = ++carregamento;
+  const estado = document.getElementById('estado-pagina');
+  const botao = document.getElementById('atualizar');
+  estado.hidden = false;
+  estado.classList.remove('erro');
+  estado.textContent = 'Carregando dados…';
+  botao.disabled = true;
+  try {
+    await carregadores[abaAtual]();
+    if (versao === carregamento) estado.hidden = true;
+  } catch (e) {
+    if (versao === carregamento) {
+      estado.classList.add('erro');
+      estado.textContent = e.message + ' Use Atualizar dados para tentar novamente.';
+    }
+  } finally { if (versao === carregamento) botao.disabled = false; }
 }
-
-document.querySelectorAll('.aba').forEach((botao) => {
-  botao.addEventListener('click', () => abrirAba(botao.dataset.aba));
+function abrirAba(nome) {
+  abaAtual = Object.hasOwn(paginas, nome) ? nome : 'dashboard';
+  document.querySelectorAll('.aba').forEach(b => {
+    const ativa = b.dataset.aba === abaAtual;
+    b.classList.toggle('ativa', ativa);
+    if (ativa) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  document.querySelectorAll('.painel').forEach(p => p.hidden = p.id !== 'aba-' + abaAtual);
+  document.getElementById('titulo-pagina').textContent = paginas[abaAtual][0];
+  document.getElementById('caminho-pagina').textContent = paginas[abaAtual][0];
+  document.getElementById('descricao-pagina').textContent = paginas[abaAtual][1];
+  history.replaceState(null, '', '#' + abaAtual);
+  atualizar();
+}
+document.querySelectorAll('.aba').forEach(b => b.addEventListener('click', () => abrirAba(b.dataset.aba)));
+document.getElementById('atualizar').addEventListener('click', atualizar);
+window.addEventListener('hashchange', () => {
+  if (location.hash !== '#conteudo') abrirAba(location.hash.slice(1));
 });
-
-abrirAba(location.hash.slice(1)); // a aba fica na URL (#voos) e sobrevive ao F5
+abrirAba(location.hash.slice(1));

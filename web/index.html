@@ -8,37 +8,38 @@
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
   <header class="topo">
-    <div class="marca">
-      <span class="logo" aria-hidden="true">✈</span>
-      <div>
-        <h1>Aeroporto Internacional do Recife</h1>
-        <p>Sistema de gestão de operações</p>
-      </div>
-    </div>
-    <nav class="abas" role="tablist">
-      <button class="aba ativa" data-aba="passageiros" role="tab">Passageiros</button>
-      <button class="aba" data-aba="voos" role="tab">Voos</button>
-      <button class="aba" data-aba="dashboard" role="tab">Dashboard</button>
-      <button class="aba" data-aba="consultas" role="tab">Consultas</button>
+    <div class="marca"><span class="logo" aria-hidden="true">✈</span><div><h1>REC<span> / Aeroporto</span></h1><p>Internacional do Recife</p></div></div>
+    <p class="nav-legenda">ÁREA DE TRABALHO</p>
+    <nav class="abas" aria-label="Navegação principal">
+      <button class="aba" data-aba="dashboard"><span aria-hidden="true">◫</span> Visão geral</button>
+      <button class="aba" data-aba="passageiros"><span aria-hidden="true">◎</span> Passageiros</button>
+      <button class="aba" data-aba="voos"><span aria-hidden="true">✈</span> Voos</button>
+      <button class="aba" data-aba="consultas"><span aria-hidden="true">⌕</span> Consultas</button>
+      <button class="aba" data-aba="recursos"><span aria-hidden="true">▤</span> Recursos do banco</button>
     </nav>
+    <div class="rodape-nav"><span class="selo">REC</span><p>Gestão aeroportuária<br><small>Operações e inteligência de dados</small></p></div>
   </header>
-
+  <main id="conteudo">
+    <div class="barra-superior"><span>Aeroporto do Recife <span class="separador">/</span> <strong id="caminho-pagina">Visão geral</strong></span><span class="selo">Painel de operações</span></div>
+    <div class="titulo-pagina"><div><p class="sobretitulo">CENTRAL DE OPERAÇÕES</p><h2 id="titulo-pagina">Visão geral</h2><p id="descricao-pagina" class="suave">Acompanhe os indicadores e resultados do aeroporto.</p></div><button id="atualizar" class="botao">↻ Atualizar dados</button></div>
+    <div id="estado-pagina" role="status" aria-live="polite" hidden></div>
     <!-- ============================ DASHBOARD ============================ -->
     <section id="aba-dashboard" class="painel" hidden>
       <div class="indicadores" id="indicadores"></div>
 
       <div class="grade-graficos">
-        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas id="grafico-status"></canvas></div></div>
-        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas id="grafico-receita"></canvas></div></div>
-        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas id="grafico-dia"></canvas></div></div>
-        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas id="grafico-ocupacao"></canvas></div></div>
+        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-status" id="grafico-status"></canvas></div></div>
+        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-receita" id="grafico-receita"></canvas></div></div>
+        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-dia" id="grafico-dia"></canvas></div></div>
+        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-ocupacao" id="grafico-ocupacao"></canvas></div></div>
       </div>
 
       <div class="cartao">
         <h2>Estatística descritiva — preço dos bilhetes</h2>
         <div class="indicadores pequeno" id="estatisticas"></div>
-        <div class="caixa-grafico alta"><canvas id="grafico-histograma"></canvas></div>
+        <div class="caixa-grafico alta"><canvas role="img" aria-label="grafico-histograma" id="grafico-histograma"></canvas></div>
         <p class="suave">Histograma com classes de mesma amplitude (nº de classes = ⌈√n⌉, entre 3 e 8).</p>
       </div>
     </section>
@@ -47,12 +48,12 @@
     <section id="aba-consultas" class="painel" hidden>
       <div class="cartao">
         <h2>Consultas SQL <span class="contador" id="contador-consultas"></span></h2>
-        <p class="suave">Cada consulta é SQL puro enviado ao MySQL (o texto também está em <code>database/consultas.sql</code>).</p>
+        <p class="suave">Explore as consultas do projeto, seus conceitos e resultados. Expanda cada cartão para visualizar os dados e o SQL.</p>
       </div>
       <div id="lista-consultas" class="lista-cartoes"></div>
     </section>
   
-  <main>
+
     <!-- ============================ PASSAGEIROS ============================ -->
     <section id="aba-passageiros" class="painel">
       <div class="cartao">
@@ -86,12 +87,12 @@
       <div class="cartao">
         <div class="cabecalho-tabela">
           <h2>Passageiros cadastrados <span class="contador" id="contador-passageiros"></span></h2>
-          <input type="search" class="busca" id="busca-passageiros" placeholder="Buscar por nome, CPF ou e-mail">
+          <input type="search" class="busca" id="busca-passageiros" aria-label="Buscar passageiros" placeholder="Buscar por nome, CPF ou e-mail">
         </div>
         <div class="tabela-rolagem">
           <table>
             <thead>
-              <tr><th>CPF</th><th>Nome</th><th>Nascimento</th><th>E-mail</th><th>Telefones</th><th class="num">Bilhetes</th><th></th></tr>
+              <tr><th>CPF</th><th>Nome</th><th>Nascimento</th><th>E-mail</th><th>Telefones</th><th class="num">Bilhetes</th><th>Ações</th></tr>
             </thead>
             <tbody id="tabela-passageiros"></tbody>
           </table>
@@ -154,17 +155,24 @@
       <div class="cartao">
         <div class="cabecalho-tabela">
           <h2>Voos cadastrados <span class="contador" id="contador-voos"></span></h2>
-          <input type="search" class="busca" id="busca-voos" placeholder="Buscar por número, cidade, status…">
+          <input type="search" class="busca" id="busca-voos" aria-label="Buscar voos" placeholder="Buscar por número, cidade, status…">
         </div>
         <div class="tabela-rolagem">
           <table>
             <thead>
-              <tr><th class="num">Voo</th><th>Data</th><th>Horário</th><th>Rota</th><th>Aeronave</th><th>Portão</th><th>Comandante</th><th>Conexão</th><th>Status</th><th></th></tr>
+              <tr><th class="num">Voo</th><th>Data</th><th>Horário</th><th>Rota</th><th>Aeronave</th><th>Portão</th><th>Comandante</th><th>Conexão</th><th>Status</th><th>Ações</th></tr>
             </thead>
             <tbody id="tabela-voos"></tbody>
           </table>
         </div>
       </div>
+    </section>
+    <section id="aba-recursos" class="painel" hidden>
+      <div class="cartao introducao"><div><h2>Recursos do banco</h2><p class="suave">Consulte as views, execute as procedures e acompanhe as regras automáticas.</p></div><span class="selo" id="contador-recursos"></span></div>
+      <div class="filtros" role="group" aria-label="Filtrar recursos">
+        <button class="botao ativo" data-tipo="todos" aria-pressed="true">Todos</button><button class="botao" data-tipo="views" aria-pressed="false">Views</button><button class="botao" data-tipo="procedures" aria-pressed="false">Procedures</button><button class="botao" data-tipo="triggers" aria-pressed="false">Triggers</button><button class="botao" data-tipo="functions" aria-pressed="false">Funções</button>
+      </div>
+      <div id="lista-recursos" class="lista-cartoes"></div>
     </section>
   </main>
 
