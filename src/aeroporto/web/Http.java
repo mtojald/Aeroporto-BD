@@ -33,6 +33,20 @@ public final class Http {
         return campos;
     }
 
+    /** Lê parâmetros de uma query string, por exemplo status=Atrasado&cia=GOL. */
+    public static Map<String, String> lerParametros(String query) {
+        Map<String, String> campos = new HashMap<>();
+        if (query == null || query.isBlank()) return campos;
+        for (String par : query.split("&")) {
+            int i = par.indexOf('=');
+            String chave = i < 0 ? par : par.substring(0, i);
+            String valor = i < 0 ? "" : par.substring(i + 1);
+            campos.put(URLDecoder.decode(chave, StandardCharsets.UTF_8),
+                       URLDecoder.decode(valor, StandardCharsets.UTF_8).trim());
+        }
+        return campos;
+    }
+
     public static void enviarJson(HttpExchange ex, int status, Object corpo) throws IOException {
         enviar(ex, status, "application/json; charset=utf-8",
                Json.escrever(corpo).getBytes(StandardCharsets.UTF_8));

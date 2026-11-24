@@ -99,7 +99,39 @@ public class RecursosHandler implements HttpHandler {
                     } else if (ps.getUpdateCount() == -1) break;
                     resultado = ps.getMoreResults();
                 }
-                return Map.of("mensagem", nome.equals("atualizar_status_voo") ? "Status do voo atualizado." : "Consulta concluída.", "resultados", resultados);
+                Map<String, Object> resposta = new LinkedHashMap<>();
+                resposta.put("mensagem", nome.equals("atualizar_status_voo") ? "Status do voo atualizado." : "Consulta concluída.");
+                resposta.put("resultados", resultados);
+                if (temVoo) resposta.put("voo", carregarContextoVoo(con, voo));
+                return resposta;
+            }
+        }
+    }
+
+    private Map<String, Object> carregarContextoVoo(Connection con, int numero) throws SQLException {
+        String sql = """
+                SELECT v.num_voo, v.data_voo, v.hora_partida, v.hora_chegada, v.status,
+                       v.fk_Aeroporto_origem AS cod_origem, ao.nome AS nome_origem, ao.cidade AS cidade_origem,
+                       v.fk_Aeroporto_destino AS cod_destino, ad.nome AS nome_destino, ad.cidade AS cidade_destino,
+                       a.capac_passageiros AS capacidade,
+                       (SELECT COUNT(*) FROM Bilhete b WHERE b.fk_Voo_num_voo = v.num_voo) AS assentos_ocupados
+                FROM Voo v
+                JOIN Aeroporto ao ON ao.cod_iata = v.fk_Aeroporto_origem
+                JOIN Aeroporto ad ON ad.cod_iata = v.fk_Aeroporto_destino
+                JOIN Aeronave a ON a.cod_aeronave = v.fk_Aeronave_cod_aeronave
+                WHERE v.num_voo = ?
+                """;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, numero);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return Map.of();
+                Map<String, Object> voo = new LinkedHashMap<>();
+                for (String coluna : List.of("num_voo", "data_voo", "hora_partida", "hora_chegada", "status",
+                        "cod_origem", "nome_origem", "cidade_origem", "cod_destino", "nome_destino",
+                        "cidade_destino", "capacidade", "assentos_ocupados")) {
+                    voo.put(coluna, rs.getObject(coluna));
+                }
+                return voo;
             }
         }
     }

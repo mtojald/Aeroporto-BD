@@ -6,59 +6,81 @@
   <title>Aeroporto do Recife — Gestão</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="airport.css">
+  <link rel="stylesheet" href="future.css">
 </head>
 <body>
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
   <header class="topo">
+    <button id="recolher-menu" class="controle-menu" type="button" aria-expanded="true" aria-label="Recolher menu lateral">☰</button>
     <div class="marca"><span class="logo" aria-hidden="true">✈</span><div><h1>REC<span> / Aeroporto</span></h1><p>Internacional do Recife</p></div></div>
-    <p class="nav-legenda">ÁREA DE TRABALHO</p>
     <nav class="abas" aria-label="Navegação principal">
       <button class="aba" data-aba="dashboard"><span aria-hidden="true">◫</span> Visão geral</button>
-      <button class="aba" data-aba="passageiros"><span aria-hidden="true">◎</span> Passageiros</button>
+      <button class="aba" data-aba="passageiros"><span aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="7" r="3.5"/><path d="M5 21v-3a7 7 0 0 1 14 0v3"/></svg></span> Passageiros</button>
       <button class="aba" data-aba="voos"><span aria-hidden="true">✈</span> Voos</button>
       <button class="aba" data-aba="consultas"><span aria-hidden="true">⌕</span> Consultas</button>
       <button class="aba" data-aba="recursos"><span aria-hidden="true">▤</span> Recursos do banco</button>
     </nav>
-    <div class="rodape-nav"><span class="selo">REC</span><p>Gestão aeroportuária<br><small>Operações e inteligência de dados</small></p></div>
+    <button id="atualizar" class="botao atualizar-lateral" title="Atualizar dados" aria-label="Atualizar dados"><span aria-hidden="true">↻</span><span class="texto-atualizar">Atualizar dados</span></button>
   </header>
   <main id="conteudo">
-    <div class="barra-superior"><span>Aeroporto do Recife <span class="separador">/</span> <strong id="caminho-pagina">Visão geral</strong></span><span class="selo">Painel de operações</span></div>
-    <div class="titulo-pagina"><div><p class="sobretitulo">CENTRAL DE OPERAÇÕES</p><h2 id="titulo-pagina">Visão geral</h2><p id="descricao-pagina" class="suave">Acompanhe os indicadores e resultados do aeroporto.</p></div><button id="atualizar" class="botao">↻ Atualizar dados</button></div>
+    <div class="titulo-pagina"><h2 id="titulo-pagina">Visão geral</h2></div>
     <div id="estado-pagina" role="status" aria-live="polite" hidden></div>
     <!-- ============================ DASHBOARD ============================ -->
     <section id="aba-dashboard" class="painel" hidden>
-      <div class="indicadores" id="indicadores"></div>
+      <div class="filtros-dashboard">
+        <div><strong id="resumo-filtros">Todos os voos</strong></div>
+        <div class="seletores-dashboard">
+          <label>Status<select id="filtro-status"><option value="">Todos</option></select></label>
+          <label>Companhia<select id="filtro-companhia"><option value="">Todas</option></select></label>
+          <label>Data inicial<input id="filtro-inicio" type="date" min="1900-01-01" max="2100-12-31"></label>
+          <label>Data final<input id="filtro-fim" type="date" min="1900-01-01" max="2100-12-31"></label>
+          <button id="aplicar-periodo" class="botao" type="button">Aplicar período</button>
+        </div>
+        <button id="limpar-filtros" class="botao" type="button" hidden>Limpar filtros</button>
+      </div>
+      <p id="erro-periodo" class="erro-periodo" role="status" hidden></p>
+      <div class="visao-malha">
+        <section class="malha-aerea" aria-labelledby="titulo-malha">
+          <div class="malha-cabecalho"><h2 id="titulo-malha">Mapa de aeroportos</h2></div>
+          <div id="diagrama-malha" class="diagrama-malha"></div>
+        </section>
+        <div class="indicadores" id="indicadores"></div>
+      </div>
+      <div id="contexto-operacao" class="contexto-operacao" aria-live="polite"></div>
+      <div id="selecoes-ativas" class="selecoes-ativas" aria-label="Seleções ativas" hidden></div>
+      <div class="painel-partidas">
+        <div class="partidas-cabecalho"><div><span class="partidas-simbolo" aria-hidden="true">↗</span><h2>Partidas</h2></div><span id="partidas-contagem"></span></div>
+        <div class="tabela-rolagem"><table><thead><tr><th>Voo</th><th>Rota</th><th>Data</th><th>Saída</th><th>Chegada</th><th>Portão</th><th>Terminal</th><th>Status</th><th>Ocupação</th></tr></thead><tbody id="voos-selecionados"></tbody></table></div>
+      </div>
 
       <div class="grade-graficos">
-        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-status" id="grafico-status"></canvas></div></div>
-        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-receita" id="grafico-receita"></canvas></div></div>
-        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-dia" id="grafico-dia"></canvas></div></div>
-        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-ocupacao" id="grafico-ocupacao"></canvas></div></div>
+        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas role="img" aria-label="Voos por status" id="grafico-status"></canvas></div></div>
+        <div class="cartao"><h2>Receita por companhia</h2><div class="caixa-grafico"><canvas role="img" aria-label="Receita por companhia" id="grafico-receita"></canvas></div></div>
+        <div class="cartao"><h2>Voos ao longo do tempo</h2><div class="caixa-grafico"><canvas role="img" aria-label="Voos por dia" id="grafico-dia"></canvas></div></div>
+        <div class="cartao"><h2>Ocupação por voo</h2><div class="caixa-grafico"><canvas role="img" aria-label="Ocupação por voo" id="grafico-ocupacao"></canvas></div></div>
+        <div class="cartao"><h2>Bilhetes por classe</h2><div class="caixa-grafico"><canvas role="img" aria-label="Bilhetes por classe" id="grafico-classe"></canvas></div></div>
+        <div class="cartao"><h2>Distribuição dos preços</h2><div class="caixa-grafico"><canvas role="img" aria-label="Distribuição de preços dos bilhetes" id="grafico-histograma"></canvas></div></div>
       </div>
 
       <div class="cartao">
-        <h2>Estatística descritiva — preço dos bilhetes</h2>
+        <h2>Estatística dos preços dos bilhetes</h2>
         <div class="indicadores pequeno" id="estatisticas"></div>
-        <div class="caixa-grafico alta"><canvas role="img" aria-label="grafico-histograma" id="grafico-histograma"></canvas></div>
-        <p class="suave">Histograma com classes de mesma amplitude (nº de classes = ⌈√n⌉, entre 3 e 8).</p>
       </div>
     </section>
 
     <!-- ============================ CONSULTAS ============================ -->
     <section id="aba-consultas" class="painel" hidden>
-      <div class="cartao">
-        <h2>Consultas SQL <span class="contador" id="contador-consultas"></span></h2>
-        <p class="suave">Explore as consultas do projeto, seus conceitos e resultados. Expanda cada cartão para visualizar os dados e o SQL.</p>
-      </div>
+      <div class="cabecalho-consultas"><span>Análises disponíveis</span><span class="contador" id="contador-consultas"></span></div>
       <div id="lista-consultas" class="lista-cartoes"></div>
     </section>
   
 
     <!-- ============================ PASSAGEIROS ============================ -->
     <section id="aba-passageiros" class="painel">
-      <div class="cartao">
-        <h2 id="titulo-form-passageiro">Novo passageiro</h2>
-        <form id="form-passageiro" class="formulario" autocomplete="off">
+      <section class="cartao cadastro-recolhivel">
+        <div class="cabecalho-cadastro"><button type="button" class="mais-cadastro" aria-label="Abrir cadastro de passageiro" aria-expanded="false" aria-controls="form-passageiro">+</button><h2 id="titulo-form-passageiro">Novo passageiro</h2></div>
+        <form id="form-passageiro" class="formulario" autocomplete="off" hidden>
           <label>CPF*
             <input name="cpf" required inputmode="numeric" maxlength="14" placeholder="000.000.000-00">
           </label>
@@ -69,7 +91,7 @@
             <input name="sobrenome" required maxlength="50">
           </label>
           <label>Data de nascimento
-            <input name="data_nasci" type="date">
+            <input name="data_nasci" type="date" min="1900-01-01" max="2100-12-31">
           </label>
           <label>E-mail
             <input name="email" type="email" maxlength="100">
@@ -82,7 +104,7 @@
             <button type="button" class="botao" data-cancelar>Cancelar edição</button>
           </div>
         </form>
-      </div>
+      </section>
 
       <div class="cartao">
         <div class="cabecalho-tabela">
@@ -102,14 +124,14 @@
 
     <!-- ================================ VOOS ================================ -->
     <section id="aba-voos" class="painel" hidden>
-      <div class="cartao">
-        <h2 id="titulo-form-voo">Novo voo</h2>
-        <form id="form-voo" class="formulario" autocomplete="off">
+      <section class="cartao cadastro-recolhivel">
+        <div class="cabecalho-cadastro"><button type="button" class="mais-cadastro" aria-label="Abrir cadastro de voo" aria-expanded="false" aria-controls="form-voo">+</button><h2 id="titulo-form-voo">Novo voo</h2></div>
+        <form id="form-voo" class="formulario" autocomplete="off" hidden>
           <label>Número do voo*
             <input name="num_voo" type="number" min="1" required>
           </label>
           <label>Data*
-            <input name="data_voo" type="date" required>
+            <input name="data_voo" type="date" min="1900-01-01" max="2100-12-31" required>
           </label>
           <label>Partida
             <input name="hora_partida" type="time">
@@ -150,7 +172,7 @@
             <button type="button" class="botao" data-cancelar>Cancelar edição</button>
           </div>
         </form>
-      </div>
+      </section>
 
       <div class="cartao">
         <div class="cabecalho-tabela">
@@ -160,7 +182,7 @@
         <div class="tabela-rolagem">
           <table>
             <thead>
-              <tr><th class="num">Voo</th><th>Data</th><th>Horário</th><th>Rota</th><th>Aeronave</th><th>Portão</th><th>Comandante</th><th>Conexão</th><th>Status</th><th>Ações</th></tr>
+              <tr><th class="num">Voo</th><th>Data</th><th>Horário</th><th>Rota</th><th>Aeronave</th><th>Portão</th><th>Terminal</th><th>Comandante</th><th>Conexão</th><th>Status</th><th>Ações</th></tr>
             </thead>
             <tbody id="tabela-voos"></tbody>
           </table>
@@ -168,11 +190,16 @@
       </div>
     </section>
     <section id="aba-recursos" class="painel" hidden>
-      <div class="cartao introducao"><div><h2>Recursos do banco</h2><p class="suave">Consulte as views, execute as procedures e acompanhe as regras automáticas.</p></div><span class="selo" id="contador-recursos"></span></div>
-      <div class="filtros" role="group" aria-label="Filtrar recursos">
-        <button class="botao ativo" data-tipo="todos" aria-pressed="true">Todos</button><button class="botao" data-tipo="views" aria-pressed="false">Views</button><button class="botao" data-tipo="procedures" aria-pressed="false">Procedures</button><button class="botao" data-tipo="triggers" aria-pressed="false">Triggers</button><button class="botao" data-tipo="functions" aria-pressed="false">Funções</button>
+      <div class="resource-toolbar">
+        <div class="resource-tabs" role="group" aria-label="Filtrar por tipo de recurso">
+          <button class="resource-tab ativo" data-tipo="todos" aria-pressed="true">Todos <span id="contagem-todos">0</span></button>
+          <button class="resource-tab" data-tipo="views" aria-pressed="false">Views <span id="contagem-views">0</span></button>
+          <button class="resource-tab" data-tipo="procedures" aria-pressed="false">Procedures <span id="contagem-procedures">0</span></button>
+          <button class="resource-tab" data-tipo="triggers" aria-pressed="false">Triggers <span id="contagem-triggers">0</span></button>
+          <button class="resource-tab" data-tipo="functions" aria-pressed="false">Funções <span id="contagem-functions">0</span></button>
+        </div>
       </div>
-      <div id="lista-recursos" class="lista-cartoes"></div>
+      <div id="lista-recursos" class="lista-recursos"></div>
     </section>
   </main>
 

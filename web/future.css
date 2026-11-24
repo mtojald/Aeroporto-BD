@@ -1,0 +1,517 @@
+/* Cockpit REC: três níveis de superfície, ciano para ação, âmbar para informação de voo. */
+:root {
+  color-scheme:dark;
+  --fundo:#080f20;
+  --cartao:#111f38;
+  --texto:#e4edf3;
+  --texto-suave:#a9bbc9;
+  --borda:#3b5263;
+  --primaria:#70cbd2;
+  --primaria-escura:#a1e3e7;
+  --realce:#263f50;
+  --perigo:#ffb4b8;
+  --sucesso:#17634e;
+}
+body {background:#080f20;color:var(--texto);font-family:'Segoe UI',system-ui,sans-serif}
+main {padding-bottom:48px}
+.topo {background:#070d1b;border-right:1px solid #263d61}
+.marca {padding-bottom:24px;border-bottom:1px solid #304453}
+.marca h1 {color:#f0f6fa}
+.marca p {color:#9fb5c5}
+.logo {background:#70cbd2;color:#102530;border-radius:10px}
+.abas {margin-top:24px;gap:8px}
+.aba {color:#aec1ce;border:1px solid transparent;border-radius:8px}
+.aba:hover {background:#213645;color:#f0f6fa}
+.aba.ativa {background:#244352;border-color:#507c89;color:#b6f0f1;box-shadow:none}
+.rodape-nav {border-color:#304453}
+.rodape-nav .selo {background:#1d3445;color:#9edee3;border-color:#456473}
+.barra-superior {color:#9bb0bf;border-bottom:1px solid #304453;min-height:56px}
+.titulo-pagina {background:transparent;color:#edf5fa;box-shadow:none;border:0;border-radius:0;min-height:0;margin:0;padding:28px 0 24px;overflow:visible}
+.titulo-pagina h2 {font-size:30px;letter-spacing:-.035em;font-weight:600}
+.titulo-pagina>.botao {background:#213746;color:#c7dce7;border-color:#5a7486;margin:0}
+.titulo-pagina>.botao:hover {background:#304f60}
+.cartao {background:#1b2c3a;border:1px solid #3b5263;border-radius:14px;box-shadow:0 7px 16px #030a111c}
+.cartao h2 {color:#e2edf4;font-size:15px}
+.botao {background:#263d4e;color:#d9e9f2;border-color:#658092;border-radius:7px}
+.botao:hover {background:#345569;color:white;border-color:#88afc3}
+.botao.primario,.botao.ativo {background:#83d3d7;color:#102b38;border-color:#83d3d7}
+.botao.primario:hover {background:#abe7e9;color:#102b38}
+.botao.perigo {background:#362a37;color:#ffb4bd;border-color:#8c6578}
+.botao.perigo:hover {background:#55313f;border-color:#c28a9a}
+:focus-visible,.resource-tab:focus-visible {outline:3px solid #f1c969;outline-offset:3px}
+.formulario label {color:#bbcfdb;font-size:12px}
+.formulario input,.formulario select,.busca {background:#132330;color:#edf4f8;border:1px solid #647f91;border-radius:7px}
+.formulario input::placeholder,.busca::placeholder {color:#a2b6c5;opacity:1}
+.formulario input:focus,.formulario select:focus,.busca:focus {border-color:#94dfe4}
+.formulario input[readonly] {background:#283b48;color:#b6c8d3}
+.formulario.editando {background:#203e4e;border:1px solid #4c7f8e}
+.cabecalho-tabela {gap:12px}
+th {background:#142633;color:#b5ccd9;border-bottom-color:#455c6d}
+td {color:#dce7ee;border-bottom-color:#344c5d}
+tbody tr:hover {background:#284454}
+.tabela-rolagem {border-radius:8px;scrollbar-color:#58778a #172937}
+.contador {background:#2c4556;color:#c2d7e3;border-radius:5px}
+.selo {background:#283f50;color:#c4d9e6;border-color:#597383}
+.selo.Confirmado,.selo.Concluído {background:#193d38;color:#a8e8cd;border-color:#4e8b78}
+.selo.Cancelado {background:#422e3b;color:#ffbdc5;border-color:#a17084}
+.selo.Atrasado {background:#423c2c;color:#f4d486;border-color:#a78d4e}
+.selo.Embarcando {background:#263b57;color:#b4d7ff;border-color:#6b8eb7}
+.suave,.vazio {color:#acc1cf}
+.aviso {background:#225746;color:#e1fff0}
+.aviso.erro {background:#72374c;color:white}
+#estado-pagina {background:#223f50;border-color:#527b8d;color:#d4ebf4}
+#estado-pagina.erro {background:#432d3b;border-color:#94677c;color:#ffd4dc}
+.filtros-dashboard {background:#172937;border:1px solid #3b5263;border-radius:10px}
+.filtros-dashboard strong {color:#dbeaf3}
+.seletores-dashboard label {color:#abc0ce}
+.seletores-dashboard input,.seletores-dashboard select {background:#10222f;color:#e0edf5;border-color:#657f91;border-radius:6px}
+.indicador {background:#1b2c3a;border:1px solid #405c6f;border-radius:12px}
+.indicadores>.indicador:first-child {background:#244757;border-color:#6392a4}
+.indicador .valor,.indicadores>.indicador:first-child .valor {color:#f1d089;font-size:29px}
+.indicador .rotulo,.indicadores>.indicador:first-child .rotulo {color:#b7d0de}
+.indicadores.pequeno .indicador {background:#142633;border:1px solid #344f61}
+.indicadores.pequeno .valor {color:#d9edf7;font-size:19px}
+.indicadores.pequeno .rotulo {color:#adc3d1}
+.grade-graficos .cartao {background:#192b39}
+.painel-partidas {border-color:#4a6373;background:#0f202d;box-shadow:0 10px 24px #040c1426}
+.partidas-cabecalho {background:#203c4d;border-bottom-color:#537082}
+.partidas-simbolo {background:#ebc56a}
+.painel-partidas th {background:#142c3b}
+.painel-partidas td {border-bottom-color:#314959}
+.painel-partidas tbody tr:nth-child(even) {background:#182e3d}
+.resource-toolbar {border:0}
+.resource-tabs {background:#132532;border:1px solid #405a6d;padding:5px;border-radius:10px}
+.resource-tab {color:#b8cbd8;border-radius:6px}
+.resource-tab span {color:#a2bdce}
+.resource-tab:hover {background:#2c495b;color:#ecf7fc}
+.resource-tab.ativo {background:#315b6d;border-color:#6999aa;color:#e6faff}
+.resource-tab.ativo span {color:#a2edf0}
+.resource-tab.ativo:hover {background:#3b6b7e}
+.recurso {border:1px solid #476274;border-radius:12px;background:#1b2f3e}
+.recurso-cabecalho h2 {color:#e4f1f8}
+.consulta summary,.recurso summary {color:#9edfe5}
+.recurso .nome-sql {color:#b0c8d7}
+.resultado-funcao {background:#102b39;border-color:#466b7e}
+.leitura-funcao strong,.detalhe-voo strong {color:#e2f4fc}
+.leitura-funcao span,.detalhe-voo {color:#b2cedd}
+.detalhe-voo {border-color:#4b6a7c}
+.detalhe-voo .codigo-rota {color:#f1cf82}
+.aviao-base {fill:#4b6575}
+.aviao-preenchimento {fill:#8fd9df}
+.cabecalho-consultas {color:#b0c6d5}
+.lista-cartoes {background:#1b2f3e;border-color:#405e72;border-radius:12px}
+.consulta.cartao {background:transparent;border-bottom-color:#3a5366;box-shadow:none}
+.consulta>summary {color:#e1edf5}
+.consulta>summary:hover {background:#284758}
+.consulta>summary:after {color:#9ec7d9}
+.numero-consulta {color:#85aabf;font-size:18px}
+.consulta[open]>summary {background:#2b5063}
+.consulta[open]>summary .numero-consulta,.consulta[open]>summary:after {color:#f1d089}
+.consulta[open]>summary .contador {background:#203d50;color:#c6e6f5}
+.consulta>.tabela-rolagem {border-color:#49677a}
+.sql {background:#0e1f2b;color:#bedde9;border:1px solid #3c5b6f;border-radius:8px}
+@media(max-width:760px) {
+ .titulo-pagina {min-height:0;margin:0;padding:24px 0 20px;align-items:center;gap:12px}
+ .titulo-pagina h2 {font-size:25px}
+ .titulo-pagina>.botao {margin:0}
+ .topo {border-right:0;border-bottom:1px solid #3b5263}
+ .marca {padding-bottom:16px}
+ .resource-tabs {width:100%}
+}
+
+/* Painéis assentados: divisórias organizam o conteúdo sem contornos repetidos. */
+.cartao,.recurso,.grade-graficos .cartao {
+ border:0;
+ border-radius:3px;
+ box-shadow:none;
+}
+.grade-graficos {gap:1px;background:#3b5263;border-block:1px solid #3b5263}
+.grade-graficos .cartao {border-radius:0}
+.lista-recursos {gap:1px;background:#3b5263;border-block:1px solid #3b5263}
+.recurso {height:100%;border-radius:0;padding:20px}
+.indicadores {gap:0;background:#1b2c3a;border-block:1px solid #405c6f}
+.indicador,.indicadores>.indicador:first-child {border:0;border-right:1px solid #405c6f;border-radius:0;box-shadow:none}
+.indicador:last-child {border-right:0}
+.indicadores.pequeno {background:transparent;border:0;gap:0}
+.indicadores.pequeno .indicador {background:transparent;border:0;border-right:1px solid #344f61;border-radius:0}
+.indicadores.pequeno .indicador:last-child {border:0}
+.painel-partidas {border:0;border-radius:4px;box-shadow:none}
+.filtros-dashboard {background:transparent;border:0;border-bottom:1px solid #3b5263;border-radius:0;padding:0 0 16px}
+.resource-tabs {background:transparent;border:0;border-radius:0;padding:0;gap:4px}
+.resource-tab {border-radius:3px}
+.lista-cartoes {border:0;border-radius:3px}
+.resultado-funcao {border:0;border-left:2px solid #70cbd2;border-radius:0}
+.consulta>.tabela-rolagem,.tabela-rolagem {border-radius:0}
+.sql {border:0;border-radius:3px}
+@media(max-width:760px) {
+ .indicadores>.indicador:nth-child(2) {border-right:0}
+ .indicadores>.indicador:nth-child(-n+2) {border-bottom:1px solid #405c6f}
+ .indicadores.pequeno .indicador {border-bottom:1px solid #344f61}
+ .indicadores.pequeno .indicador:nth-child(even) {border-right:0}
+}
+
+/* Hierarquia de leitura: valores > rótulos > controles > metadados. */
+.indicadores:not(.pequeno) .indicador {padding:22px 24px;gap:12px;min-height:128px}
+.indicadores:not(.pequeno) .indicador .valor {color:#f5f9fc;font-size:clamp(30px,2.7vw,42px);line-height:1.12;font-weight:650;letter-spacing:-.035em;overflow-wrap:normal}
+.indicadores:not(.pequeno) .indicador .rotulo {color:#cbdce7;font-size:14px;font-weight:500}
+.indicadores:not(.pequeno)>.indicador:first-child {background:#214454}
+.indicadores.pequeno .valor {font-size:22px;color:#edf5fa}
+.indicadores.pequeno .rotulo {font-size:13px;color:#c0d3df}
+.cartao h2,.recurso-cabecalho h2 {font-size:17px;font-weight:600}
+.formulario label,.seletores-dashboard label {font-size:13px;color:#c4d6e1}
+.formulario input,.formulario select,.busca,.seletores-dashboard input,.seletores-dashboard select {font-size:14px;min-height:42px}
+.botao {font-size:14px}
+table {font-size:14px}
+th,.painel-partidas th {font-size:12px;letter-spacing:.025em;color:#c2d7e5;padding:12px}
+.painel-partidas td {font-size:14px;padding:13px 12px;color:#e4eff6}
+.painel-partidas .hora-partida {font-size:21px;color:#f1d184}
+.status-partida {font-size:12px;padding:4px 7px}
+.partidas-cabecalho {padding:16px 20px}
+.partidas-cabecalho>span {font-size:13px;color:#c5d8e4}
+.painel-partidas>.tabela-rolagem {max-height:360px}
+.contexto-operacao {display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;font-size:13px;color:#c0d4e1;margin-top:-5px}
+.operacao-atencao {color:#f5cf80}
+.selecoes-ativas {display:flex;flex-wrap:wrap;gap:8px}
+.remover-selecao {display:flex;align-items:center;gap:12px;background:#234655;border:1px solid #6b9aaa;border-radius:4px;color:#e7f8ff;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
+.remover-selecao:hover {background:#355e70;border-color:#abdce8}
+.remover-selecao span {font-size:20px;line-height:1;color:#aee2ed}
+.filtros-dashboard>div:first-child {flex-basis:100%}
+.filtros-dashboard {gap:10px;padding-bottom:16px;align-items:end}
+.filtros-dashboard .seletores-dashboard {flex:1}
+.filtros-dashboard strong {font-size:14px}
+.recurso .nome-sql {font-size:12px}
+.leitura-funcao span,.detalhe-voo {font-size:13px}
+.detalhe-voo strong {font-size:14px}
+.leitura-funcao strong {font-size:26px}
+@media(max-width:1100px) {
+ .indicadores:not(.pequeno) .indicador .valor {font-size:32px}
+}
+@media(max-width:760px) {
+ .indicadores:not(.pequeno) .indicador {padding:18px 16px;min-height:112px;gap:8px}
+ .indicadores:not(.pequeno) .indicador .valor {font-size:29px;overflow-wrap:anywhere}
+ .indicadores:not(.pequeno) .indicador .rotulo {font-size:13px}
+ .indicadores:not(.pequeno) .indicador:last-child .valor {font-size:25px}
+ .partidas-cabecalho>span {max-width:130px}
+}
+
+/* Azul-noite: fundo recuado, superfícies de trabalho e controles em três planos. */
+.topo {box-shadow:8px 0 28px #02061230}
+.marca,.rodape-nav,.barra-superior {border-color:#243859}
+.aba:hover {background:#142744}
+.aba.ativa {background:#173457;border-color:#4776a0;color:#d1edff}
+.cartao,.recurso,.grade-graficos .cartao,.lista-cartoes {background:#111f38}
+.grade-graficos,.lista-recursos {background:#2b4264;border-color:#2b4264}
+.indicadores {background:#101f38;border-color:#314a70}
+.indicador {background:#101f38;border-color:#314a70}
+.indicadores:not(.pequeno)>.indicador:first-child {background:#17375a}
+.indicadores.pequeno .indicador {background:transparent;border-color:#2b4264}
+.formulario input,.formulario select,.busca,.seletores-dashboard input,.seletores-dashboard select {background:#0a172d;border-color:#536f95}
+.formulario input[readonly] {background:#172b47}
+.formulario.editando {background:#152d4b;border-color:#426c97}
+.botao,.titulo-pagina>.botao {background:#1a3252;border-color:#58799d}
+.botao:hover,.titulo-pagina>.botao:hover {background:#254b71}
+.botao.primario {background:#83d3d7;color:#102b38;border-color:#83d3d7}
+.botao.primario:hover {background:#abe7e9}
+th {background:#0d1c34;border-color:#314a70}
+td {border-color:#283e60}
+tbody tr:hover {background:#1a3454}
+.painel-partidas {background:#09162b;box-shadow:0 12px 30px #01061438}
+.partidas-cabecalho {background:#173354;border-color:#3a5b82}
+.painel-partidas th {background:#0d213d}
+.painel-partidas td {border-color:#253c5d}
+.painel-partidas tbody tr:nth-child(even) {background:#10233d}
+.painel-partidas tbody tr:hover {background:#1d3b5d}
+.resource-tabs {background:#0b1a30;border-color:#355379}
+.resource-tab.ativo {background:#23496c;border-color:#5a86aa}
+.resource-tab:hover {background:#1c3858}
+.resultado-funcao {background:#0b1d35}
+.consulta>summary:hover {background:#193452}
+.consulta[open]>summary {background:#20466a}
+.consulta[open]>summary .contador,.contador {background:#203b5b}
+.sql {background:#070f21}
+.filtros-dashboard,.contexto-operacao,.detalhe-voo {border-color:#304b70}
+.remover-selecao {background:#1b3d5d;border-color:#608ab0}
+.remover-selecao:hover {background:#2b547a}
+
+/* Composição de cockpit: malha em destaque e medidas ao lado. */
+body {background:#080f1b}
+.topo {background:#080e18;border-color:#253149;box-shadow:none}
+.marca {align-items:center;padding-bottom:26px}
+.marca h1 {font-size:34px;letter-spacing:-.05em}
+.logo {background:#8bdcde;border-radius:4px;width:40px;height:40px}
+.aba {font-weight:500;color:#aebed0;padding:13px 12px}
+.aba.ativa {background:#173449;border-color:#45697c;color:#d0fcff}
+.barra-superior {min-height:48px;color:#9eb0c4;border-bottom:0}
+.titulo-pagina {padding:8px 0 24px}
+.titulo-pagina h2 {font-size:32px;letter-spacing:-.04em}
+.filtros-dashboard {border:0;background:#101c2c;padding:12px 16px;border-radius:4px}
+.filtros-dashboard>div:first-child {flex-basis:auto;flex:1}
+.filtros-dashboard .seletores-dashboard {flex:none}
+.filtros-dashboard label {font-size:12px}
+.filtros-dashboard select,.filtros-dashboard input {min-height:36px;background:#0b1524;border-color:#496078}
+.visao-malha {display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:24px;align-items:stretch;padding:8px 0}
+.malha-aerea {min-width:0;background:radial-gradient(ellipse at 28% 48%,#122e43 0,#0d1b2c 45%,#0b1726 85%);border-block:1px solid #2d485f;display:flex;flex-direction:column}
+.malha-cabecalho {display:flex;justify-content:space-between;align-items:center;padding:16px 20px 0;gap:16px}
+.malha-cabecalho h2 {font-size:17px;font-weight:600;margin:0;color:#e4f1f8}
+.malha-cabecalho>span {font-size:12px;color:#a6bfd0}
+.diagrama-malha {display:flex;align-items:center;justify-content:center;flex:1;min-height:220px}
+.diagrama-malha svg {width:100%;max-height:275px;display:block}
+.malha-anel {fill:none;stroke:#2c4b63;stroke-width:.65}
+.malha-ligacao {fill:none;stroke:#6ebbc8;stroke-linecap:round;opacity:.8}
+.malha-hub {fill:#a2e3e3;stroke:#264958;stroke-width:7}
+.malha-ponto {fill:#f1c97d;stroke:#284458;stroke-width:4}
+.malha-codigo {fill:#c9e0ed;font:600 15px 'Segoe UI',sans-serif;letter-spacing:.04em}
+.malha-codigo.principal {fill:#ecfaff;font-size:25px;font-weight:650;letter-spacing:.08em}
+.malha-rodape {display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;padding:10px 20px;color:#a0b7ca;font-size:11px;border-top:1px solid #243a4d}
+.visao-malha>.indicadores {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:transparent;border:0;gap:0}
+.visao-malha .indicadores:not(.pequeno)>.indicador {background:transparent;border:0;border-bottom:1px solid #30455b;padding:24px 18px;min-height:140px;flex-direction:column-reverse;justify-content:center;gap:12px}
+.visao-malha .indicadores:not(.pequeno)>.indicador:nth-child(odd) {border-right:1px solid #30455b}
+.visao-malha .indicadores:not(.pequeno)>.indicador:nth-last-child(-n+2) {border-bottom:0}
+.visao-malha .indicadores:not(.pequeno) .valor {font-size:clamp(26px,2.5vw,38px);font-weight:600;color:#f1f7fc;letter-spacing:-.035em}
+.visao-malha .indicadores:not(.pequeno) .rotulo {font-size:13px;color:#b0c5d6}
+.visao-malha .indicadores:not(.pequeno)>.indicador:first-child .valor {color:#9be0e2}
+.contexto-operacao {padding-bottom:12px;margin:0;border-bottom:1px solid #2b4157}
+.painel-partidas {box-shadow:none;border-radius:4px;background:#0b1625}
+.partidas-cabecalho {background:#152a3d;padding:14px 18px;border-color:#355069}
+.partidas-simbolo {background:transparent;color:#e9cc88;font-size:28px;width:26px}
+.partidas-cabecalho h2 {font-size:18px}
+.painel-partidas th {background:#0f2031;text-transform:none;letter-spacing:0;font-weight:500;color:#adbed0}
+.painel-partidas tbody tr:nth-child(even) {background:#0f1e2e}
+.painel-partidas tbody tr:hover {background:#1c3449}
+.painel-partidas td {border-color:#283d50}
+.painel-partidas .hora-partida {font-size:20px;color:#eaca8b}
+.painel-partidas .botao {border:0;background:transparent;padding:3px 0;color:#a5e3e7;font-size:14px}
+.painel-partidas .botao:hover {text-decoration:underline;background:transparent}
+.grade-graficos {background:transparent;gap:24px;border:0}
+.grade-graficos .cartao {background:#0f1e2f;border:0;border-top:1px solid #334c63;padding:20px}
+.cartao,.recurso,.lista-cartoes {background:#111f30}
+.formulario input,.formulario select,.busca {background:#091525}
+.recurso {border-top:1px solid #39566c}
+.resource-tabs {background:transparent}
+.resource-tab.ativo {background:#214456;border-color:#6a96a5;color:#d2fbff}
+.lista-recursos {gap:20px;background:transparent;border:0}
+.consulta>summary {padding:21px 22px}
+.consulta[open]>summary {background:#1b3a4e}
+.botao.primario {background:#a1dfe0;color:#0c2b38;border-color:#a1dfe0}
+@media(max-width:1100px) {
+ .visao-malha {grid-template-columns:minmax(0,1fr)}
+ .visao-malha>.indicadores {grid-template-columns:repeat(4,minmax(0,1fr))}
+ .visao-malha .indicadores:not(.pequeno)>.indicador {border:0;border-right:1px solid #30455b;min-height:105px;padding:16px}
+ .visao-malha .indicadores:not(.pequeno)>.indicador:last-child {border:0}
+ .visao-malha .indicadores:not(.pequeno) .valor {font-size:28px}
+ .filtros-dashboard .seletores-dashboard {flex:1}
+}
+@media(max-width:760px) {
+ .titulo-pagina h2 {font-size:26px}
+ .visao-malha {gap:12px}
+ .visao-malha>.indicadores {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .visao-malha .indicadores:not(.pequeno)>.indicador {border:0;border-bottom:1px solid #30455b}
+ .visao-malha .indicadores:not(.pequeno) .valor {font-size:29px}
+ .visao-malha .indicadores:not(.pequeno)>.indicador:last-child .valor {font-size:26px}
+ .filtros-dashboard>div:first-child {flex-basis:100%}
+ .filtros-dashboard .seletores-dashboard {width:100%}
+ .filtros-dashboard {display:flex;flex-direction:column;align-items:stretch}
+ .filtros-dashboard>div:first-child {flex:none}
+ .filtros-dashboard .seletores-dashboard {flex:none;min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .filtros-dashboard .seletores-dashboard label {min-width:0}
+ .filtros-dashboard input,.filtros-dashboard select {min-width:0;max-width:100%}
+ .diagrama-malha {min-height:190px}
+ .malha-rodape {font-size:11px;padding-inline:14px}
+ .malha-cabecalho {padding-inline:14px}
+}
+
+/* Luz ambiente: concentra profundidade na visualização e mantém os dados foscos. */
+body {
+ background-color:#080f1b;
+ background-image:radial-gradient(ellipse at 68% 0%,#173c602e 0%,transparent 58%);
+ background-attachment:fixed;
+}
+main {position:relative}
+.topo {
+ background:linear-gradient(165deg,#111f31 0%,#090f1b 58%);
+ border-right-color:#38557366;
+ box-shadow:12px 0 36px #03081233;
+}
+.logo {background:linear-gradient(145deg,#b9f1ec,#73bfcf);box-shadow:0 2px 12px #61c6d31c}
+.aba.ativa {
+ background:linear-gradient(115deg,#224d61,#182f45);
+ border-color:#7298ad80;
+ box-shadow:inset 0 1px #d0f5ff12,0 3px 12px #030c182b;
+}
+.malha-aerea {
+ position:relative;
+ overflow:hidden;
+ background:
+  radial-gradient(ellipse at 25% 48%,#23617642 0%,transparent 58%),
+  linear-gradient(125deg,#142d42db,#0b192ee8 65%,#14243c);
+ border:1px solid #6b9ab052;
+ border-radius:8px;
+ box-shadow:inset 0 1px #c7f5ff17,0 16px 36px #02091640;
+}
+.malha-cabecalho {padding-top:18px}
+.malha-cabecalho h2 {color:#e4f6ff}
+.malha-ligacao {stroke:#8edbe1;opacity:.9;filter:drop-shadow(0 0 3px #65cfde42)}
+.malha-hub {fill:#b8f6ee;stroke:#417989;filter:drop-shadow(0 0 7px #6cddd469)}
+.malha-ponto {fill:#f3d291;stroke:#385c71}
+.malha-anel {stroke:#59859c;opacity:.35}
+.visao-malha .indicadores:not(.pequeno)>.indicador {
+ background:linear-gradient(145deg,#1a304122,transparent 70%);
+ border-color:#53708752;
+}
+.visao-malha .indicadores:not(.pequeno)>.indicador:first-child .valor {
+ color:#b0ebe7;
+ text-shadow:0 0 20px #67cecf16;
+}
+.painel-partidas {
+ background:#0c1929;
+ box-shadow:0 8px 24px #02091626;
+}
+.partidas-cabecalho {
+ background:linear-gradient(105deg,#224457,#142b40 72%);
+ border-bottom-color:#6c91a54a;
+ box-shadow:inset 0 1px #c9eeff0d;
+}
+.painel-partidas th {background:#112437}
+.painel-partidas tbody tr:nth-child(even) {background:#122438}
+.grade-graficos .cartao {
+ background:linear-gradient(155deg,#172b3d,#101f30 75%);
+ border-top-color:#52768c80;
+}
+.recurso {
+ background:linear-gradient(140deg,#192f41,#112235 78%);
+ border-top-color:#608da18c;
+}
+.resultado-funcao {
+ background:linear-gradient(100deg,#1c43514d,#0b1d30);
+ border-left-color:#8bd7db;
+}
+.formulario input,.formulario select,.busca {
+ background:#0a1828;
+ box-shadow:inset 0 2px 4px #02081230;
+}
+.formulario input:focus,.formulario select:focus,.busca:focus {
+ background:#10263a;
+ border-color:#a0d9e5;
+}
+.botao.primario {
+ background:linear-gradient(135deg,#b4e9e5,#8bcdd7);
+ border-color:#c0efed;
+ box-shadow:inset 0 1px #ffffff33;
+}
+.botao.primario:hover {background:#c2f0eb}
+.consulta[open]>summary {
+ background:linear-gradient(110deg,#254c60,#19354a);
+}
+@media(prefers-reduced-motion:reduce) {
+ .malha-ligacao,.malha-hub {filter:none}
+}
+
+.titulo-pagina {padding-top:28px}
+.topo {overflow-y:auto}
+.controle-menu {align-self:flex-end;background:transparent;color:#c6ddeb;border:1px solid #526c82;border-radius:4px;width:36px;height:34px;font-size:19px;margin-bottom:16px;flex:none;cursor:pointer}
+.controle-menu:hover {background:#234158;color:#fff}
+.abas .aba .texto-aba {font:inherit;width:auto;text-align:left}
+.atualizar-lateral {margin-top:28px;display:flex;gap:10px;align-items:center;justify-content:center;flex:none}
+.atualizar-lateral>span:first-child {font-size:23px;line-height:1}
+.rodape-nav {margin-top:auto;padding-top:18px;flex:none}
+.cadastro-recolhivel.cartao {padding:0;background:#142b3d;border-top:1px solid #446c82}
+.cadastro-recolhivel>summary {display:flex;align-items:center;gap:14px;list-style:none;padding:16px 20px;cursor:pointer}
+.cadastro-recolhivel>summary::-webkit-details-marker {display:none}
+.cadastro-recolhivel>summary h2 {margin:0;font-size:16px}
+.mais-cadastro {display:grid;place-items:center;width:34px;height:34px;background:#214b5d;color:#b5f1ef;font-size:28px;font-weight:300;line-height:1;border:1px solid #6296a8;border-radius:5px}
+.indicacao-cadastro {margin-left:auto;color:#bed7e4;font-size:23px}
+.cadastro-recolhivel[open] .indicacao-cadastro {transform:rotate(180deg)}
+.cadastro-recolhivel>summary:hover {background:#1e3d50}
+.cadastro-recolhivel[open]>summary {border-bottom:1px solid #3c5b70}
+.cadastro-recolhivel>.formulario {padding:20px}
+.filtros-dashboard {align-items:flex-end}
+.filtros-dashboard>div:first-child {align-self:flex-end;padding-bottom:9px}
+.filtros-dashboard .seletores-dashboard {align-items:flex-end}
+@media(min-width:761px) {
+ .menu-recolhido .topo {width:82px;padding:20px 12px}
+ .menu-recolhido main {margin-left:82px}
+ .menu-recolhido .controle-menu {align-self:center}
+ .menu-recolhido .marca {padding:0 0 22px;justify-content:center}
+ .menu-recolhido .marca>div,.menu-recolhido .texto-aba,.menu-recolhido .texto-atualizar,.menu-recolhido .rodape-nav {display:none}
+ .menu-recolhido .aba {justify-content:center;padding:13px 8px}
+ .menu-recolhido .aba>span:first-child {display:block;width:22px}
+ .menu-recolhido .atualizar-lateral {padding:8px}
+}
+@media(max-width:760px) {
+ .controle-menu {position:absolute;top:20px;right:18px;margin:0}
+ .topo {position:relative;overflow:visible}
+ .marca {padding-right:45px}
+ .atualizar-lateral {margin-top:14px;align-self:flex-start;padding:7px 12px}
+ .menu-recolhido .abas,.menu-recolhido .atualizar-lateral {display:none}
+ .abas .aba .texto-aba {display:block;text-align:center}
+ .filtros-dashboard>div:first-child {align-self:flex-start;padding-bottom:0}
+ .cadastro-recolhivel>summary {padding:14px 16px}
+ .cadastro-recolhivel>.formulario {padding:16px}
+}
+
+.topo {overflow:visible;padding-top:18px;padding-bottom:18px;gap:0}
+.controle-menu {margin-bottom:10px;height:30px}
+.marca {padding-bottom:18px}
+.abas {margin-top:18px;gap:5px}
+.aba {padding:11px 12px}
+.aba>span:first-child {display:grid;place-items:center}
+.botao.atualizar-lateral {margin-top:18px;min-height:34px;padding:6px 10px;background:transparent;border:0;border-top:1px solid #30495e;border-radius:0;box-shadow:none;color:#aec4d3;font-size:13px;justify-content:flex-start}
+.botao.atualizar-lateral:hover {background:#182f43;color:#edfaff}
+.atualizar-lateral>span:first-child {font-size:20px}
+.cabecalho-cadastro {display:flex;align-items:center;gap:14px;padding:14px 20px}
+.cabecalho-cadastro h2 {margin:0;font-size:16px}
+.mais-cadastro {cursor:pointer;flex:none}
+.mais-cadastro:hover {background:#356578;color:#fff}
+.cadastro-recolhivel.aberto>.cabecalho-cadastro {border-bottom:1px solid #3c5b70}
+@media(min-width:761px) and (max-height:650px) {
+ .topo {padding-block:12px}
+ .controle-menu {margin-bottom:6px}
+ .marca {padding-bottom:12px}
+ .abas {margin-top:12px;gap:2px}
+ .aba {padding-block:8px}
+ .botao.atualizar-lateral {margin-top:12px}
+}
+@media(max-width:760px) {
+ .botao.atualizar-lateral {margin-top:10px;padding:5px 8px}
+ .cabecalho-cadastro {padding:14px 16px}
+}
+
+.botao.atualizar-lateral {width:100%;max-width:100%;min-width:0;height:auto;min-height:36px;line-height:1.4;padding:8px 6px;gap:8px;overflow:visible;flex-shrink:0}
+.atualizar-lateral .texto-atualizar {white-space:normal;min-width:0;line-height:1.4}
+.atualizar-lateral>span:first-child {flex:none;display:inline-block;line-height:1.2;width:24px;text-align:center}
+.filtros-dashboard {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 16px;padding:16px;align-items:end}
+.filtros-dashboard>div:first-child {grid-column:1/-1;align-self:start;padding:0;display:block}
+.filtros-dashboard .seletores-dashboard {display:grid;grid-template-columns:minmax(100px,.8fr) minmax(150px,1.3fr) repeat(2,minmax(140px,1fr)) auto;align-items:end;gap:12px;min-width:0;width:100%}
+.seletores-dashboard label {display:grid;gap:6px;font-size:13px;min-width:0;color:#c4d7e5}
+.seletores-dashboard select,.seletores-dashboard input {width:100%;min-width:0;height:40px}
+#aplicar-periodo {height:40px;white-space:nowrap}
+.erro-periodo {margin:0;padding:10px 14px;background:#422b39;color:#ffd1d8;border-left:2px solid #d994a4;font-size:14px}
+input[aria-invalid="true"] {border-color:#eea1b2!important}
+@media(min-width:761px) {
+ .topo {padding-block:14px}
+ .controle-menu {margin-bottom:8px}
+ .marca {padding-bottom:14px}
+ .abas {margin-top:14px;gap:4px}
+ .aba {padding-block:9px}
+ .botao.atualizar-lateral {margin-top:14px}
+ .menu-recolhido .botao.atualizar-lateral {justify-content:center;padding:7px 0}
+}
+@media(max-width:1250px) {
+ .filtros-dashboard .seletores-dashboard {grid-template-columns:repeat(2,minmax(0,1fr))}
+ #aplicar-periodo {justify-self:start}
+}
+@media(max-width:760px) {
+ .filtros-dashboard {grid-template-columns:minmax(0,1fr)}
+ .filtros-dashboard .seletores-dashboard {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .botao.atualizar-lateral {width:auto}
+ .menu-recolhido .atualizar-lateral {display:none}
+}
+@media(min-width:761px) and (max-height:520px) {
+ .topo,.menu-recolhido .topo {padding-block:8px}
+ .marca p {display:none}
+ .marca {padding-bottom:8px}
+ .marca h1 {font-size:26px}
+ .abas {margin-top:8px;gap:2px}
+ .aba,.menu-recolhido .aba {padding-block:6px}
+ .botao.atualizar-lateral {margin-top:8px}
+}

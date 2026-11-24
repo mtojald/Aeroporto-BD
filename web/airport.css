@@ -1,0 +1,111 @@
+/* REC: superfícies de grafite, sinalização âmbar e dados em tons frios. */
+:root {
+  --fundo:#edf1f3;
+  --texto:#172d3b;
+  --texto-suave:#526775;
+  --borda:#d9e1e5;
+  --primaria:#193f53;
+  --primaria-escura:#102c3c;
+  --realce:#f2f6f8;
+  --sinalizacao:#f4cf58;
+  --raio:10px;
+}
+body { font-size:14px;line-height:1.55;background:#e9edef }
+.topo { background:#122837;padding:28px 18px }
+.logo { border-radius:5px;background:var(--sinalizacao);color:#142b39;border:0 }
+.marca h1 { font-size:30px;letter-spacing:-.04em;line-height:1.05 }
+.marca h1 span {display:block;font-size:12px;letter-spacing:.05em;margin-top:6px}
+.marca p { color:#becbd2 }
+.abas { gap:5px }
+.aba { border-radius:5px;padding:12px;color:#c6d2da }
+.aba:hover { background:#284353 }
+.aba.ativa { background:var(--sinalizacao);color:#142b39 }
+.aba span { font-size:18px }
+.barra-superior { min-height:52px;font-size:11px;color:#526775;border:0 }
+.titulo-pagina { position:relative;isolation:isolate;overflow:hidden;background:#142c3b;color:white;padding:28px;margin:0 0 24px;border-radius:12px;min-height:146px;box-shadow:0 8px 20px #132b3b12 }
+.placa-secao {display:flex;align-items:center;gap:22px;position:relative;z-index:1}
+#numero-secao {display:grid;place-items:center;width:64px;height:72px;background:#f4cf58;color:#142b39;border-radius:5px;font-size:38px;font-weight:750;letter-spacing:-.05em}
+.nome-terminal {display:block;font-size:10px;font-weight:650;letter-spacing:.15em;color:#b8c8d1;margin-bottom:6px}
+.titulo-pagina h2 { font-size:clamp(24px,3vw,38px);font-weight:600;letter-spacing:-.035em;line-height:1.1 }
+.titulo-pagina>.botao {position:relative;z-index:1;background:#243f50;color:white;border-color:#8298a6;flex:none}
+.titulo-pagina>.botao:hover {background:#36586b}
+.seta-terminal {position:absolute;right:34px;top:-62px;font-size:250px;font-weight:300;line-height:1;color:#294352;z-index:-1;pointer-events:none}
+.cartao { border-radius:10px;box-shadow:0 2px 3px #17314404;padding:20px;border-color:#d3dde3 }
+.cartao h2 { font-size:15px;margin-bottom:16px }
+.painel { gap:16px }
+.botao { border-radius:5px;border-color:#9aaeb9;font-weight:600;min-height:36px }
+.botao.primario { background:#193f53;border-color:#193f53 }
+.botao.primario:hover { background:#102c3c }
+.botao:hover { background:#e8eff3;border-color:#526f80 }
+:focus-visible { outline:3px solid #9a7410;outline-offset:3px }
+.formulario { gap:14px 18px }
+.formulario label { color:#425c6c;font-size:12px }
+.formulario input,.formulario select,.busca { border-radius:5px;background:#fff;border-color:#9aaeb9;min-height:40px }
+.formulario input:focus,.formulario select:focus,.busca:focus { border-color:#193f53 }
+.cabecalho-tabela { margin-bottom:16px }
+th { color:#405d6d;background:#edf3f6;letter-spacing:.045em;font-size:10px }
+td { padding:12px }
+.selo { border-radius:4px;color:#3f5d6e;background:#edf3f6 }
+.resource-toolbar { border:0;padding:0 0 6px }
+.resource-tabs { background:#e1e8ec;border:0;border-radius:6px;padding:4px;gap:4px }
+.resource-tab { border-radius:4px;min-height:38px;color:#405968 }
+.resource-tab.ativo { background:#193f53;color:white;border-color:#193f53;box-shadow:none }
+.resource-tab.ativo span { color:#f4cf58 }
+.resource-tab:hover { background:#d0dce3 }
+.resource-tab.ativo:hover { background:#102c3c }
+.recurso { padding:20px;align-self:start;border-top:3px solid #193f53 }
+.recurso-cabecalho { gap:8px;align-items:flex-start }
+.recurso-cabecalho h2 { font-size:15px;margin:0 }
+.recurso .formulario { margin:14px 0 0 }
+.recurso .acoes { padding:0 }
+.recurso .nome-sql { display:block;color:#526775;font:10px/1.5 Consolas,monospace;overflow-wrap:anywhere;margin-top:3px }
+.recurso details { margin:8px 0 }
+.resultado-funcao { background:#f0f5f7;border-color:#d3dfe5;border-radius:6px }
+.aviao-preenchimento { fill:#1e6372 }
+.detalhe-voo .codigo-rota { color:#193f53 }
+.cabecalho-consultas {display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#526775;padding:0 2px 4px}
+.lista-cartoes {gap:0;background:white;border:1px solid #cbd7de;border-radius:12px;overflow:hidden}
+.consulta.cartao {border:0;border-radius:0;box-shadow:none;border-bottom:1px solid #dce4e8;padding:0}
+.consulta:last-child {border-bottom:0}
+.consulta>summary { font-size:14px;padding:19px 22px;gap:20px;position:relative }
+.consulta>summary:before {display:none}
+.consulta>summary:after {content:'+';font-size:22px;color:#526775;margin-left:4px;font-weight:400}
+.consulta[open]>summary:after {content:'−'}
+.numero-consulta {font-size:25px;font-weight:650;letter-spacing:-.045em;color:#8095a2;min-width:34px;font-variant-numeric:tabular-nums}
+.consulta>summary strong {font-weight:600}
+.consulta>summary:hover {background:#f0f5f7}
+.consulta[open]>summary {background:#193f53;color:white}
+.consulta[open]>summary .numero-consulta,.consulta[open]>summary:after {color:#f4cf58}
+.consulta[open]>summary .contador {background:#304d5e;color:#e1eaf0}
+.consulta>p,.consulta>details {margin:16px 22px}
+.consulta>.tabela-rolagem {margin:0 22px 22px;border:1px solid #d9e3e9;border-radius:6px}
+.sql { background:#132b3b;border-radius:6px }
+.indicador { border-radius:8px;padding:18px;gap:8px;border-bottom:3px solid #193f53 }
+.indicadores>.indicador:first-child { background:#193f53;border-color:#193f53 }
+.indicador .valor { font-size:26px }
+.indicadores.pequeno { grid-template-columns:repeat(4,minmax(0,1fr));margin:0 }
+.indicadores.pequeno .indicador { background:#f0f4f6;border:0;padding:12px;gap:4px }
+.indicadores.pequeno .valor { font-size:18px }
+.filtros-dashboard { border:1px solid #d2dde3;border-radius:8px;background:#f8fafb;padding:12px 16px;flex-wrap:wrap;gap:12px }
+.seletores-dashboard input,.seletores-dashboard select { border-color:#9aaeb9;border-radius:5px;min-height:36px }
+.grade-graficos { gap:16px }
+.caixa-grafico { height:240px }
+@media(max-width:1100px) { .indicadores.pequeno {grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media(max-width:760px) {
+  .topo {padding:16px}
+  .abas {grid-template-columns:repeat(3,minmax(0,1fr));margin-top:16px}
+  .aba {padding:10px 8px;font-size:12px}
+  .cartao {padding:16px}
+  .titulo-pagina h2 {font-size:24px}
+  .titulo-pagina {padding:20px;gap:18px;min-height:150px;margin-bottom:20px}
+  .placa-secao {gap:14px}
+  #numero-secao {width:45px;height:56px;font-size:28px}
+  .titulo-pagina>.botao {margin-left:59px;font-size:11px;min-height:32px}
+  .seta-terminal {right:0;top:-14px;font-size:190px}
+  .consulta>summary {padding:16px;gap:12px}
+  .numero-consulta {font-size:22px;min-width:28px}
+  .resource-tabs {display:flex;flex-wrap:wrap}
+  .resource-tab {flex:1 0 auto;gap:8px;justify-content:center;padding:8px 10px}
+  .filtros-dashboard .seletores-dashboard {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .seletores-dashboard input,.seletores-dashboard select {width:100%;min-width:0}
+}
