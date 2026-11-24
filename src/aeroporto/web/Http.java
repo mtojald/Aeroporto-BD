@@ -21,8 +21,16 @@ public final class Http {
         try (InputStream in = ex.getRequestBody()) {
             corpo = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
+        return decodificarCampos(corpo);
+    }
+
+    public static Map<String, String> lerParametros(HttpExchange ex) {
+        return decodificarCampos(ex.getRequestURI().getRawQuery());
+    }
+
+    private static Map<String, String> decodificarCampos(String corpo) {
         Map<String, String> campos = new HashMap<>();
-        if (corpo.isBlank()) return campos;
+        if (corpo == null || corpo.isBlank()) return campos;
         for (String par : corpo.split("&")) {
             int i = par.indexOf('=');
             String chave = i < 0 ? par : par.substring(0, i);

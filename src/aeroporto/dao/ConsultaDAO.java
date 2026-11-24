@@ -187,6 +187,67 @@ public class ConsultaDAO {
             FROM Voo v1
             JOIN Voo v2 ON v2.num_voo = v1.fk_Voo_conexao
             ORDER BY v1.num_voo
+            """),
+
+        new Consulta(11,
+            "Passageiros que nunca compraram bilhete",
+            "Quais passageiros estão cadastrados mas nunca viraram clientes (nenhum bilhete em nome deles)?",
+            "ANTI-JOIN · LEFT JOIN · IS NULL",
+            """
+            SELECT p.cpf, CONCAT(p.primeiro_nome, ' ', p.sobrenome) AS passageiro, p.email
+            FROM Passageiro p
+            LEFT JOIN Bilhete b ON b.fk_Passageiro_cpf = p.cpf
+            WHERE b.cod_bilhete IS NULL
+            ORDER BY passageiro
+            """),
+
+        new Consulta(12,
+            "Pilotos e os voos que comandam",
+            "Juntando todo piloto (mesmo sem nenhum voo comandado) com todo voo (que sempre tem piloto, por ser FK obrigatória), quem comanda o quê?",
+            "FULL OUTER JOIN simulado · LEFT JOIN · UNION · RIGHT JOIN",
+            """
+            SELECT f.matricula, CONCAT(f.primeiro_nome, ' ', f.sobrenome) AS piloto,
+                   v.num_voo, v.data_voo
+            FROM Piloto p
+            JOIN Funcionario f ON f.matricula = p.fk_Funcionario_matricula
+            LEFT JOIN Voo v ON v.fk_Piloto_comandante = p.fk_Funcionario_matricula
+            UNION
+            SELECT f.matricula, CONCAT(f.primeiro_nome, ' ', f.sobrenome) AS piloto,
+                   v.num_voo, v.data_voo
+            FROM Piloto p
+            JOIN Funcionario f ON f.matricula = p.fk_Funcionario_matricula
+            RIGHT JOIN Voo v ON v.fk_Piloto_comandante = p.fk_Funcionario_matricula
+            ORDER BY matricula, num_voo
+            """),
+
+        new Consulta(13,
+            "Voos com preço médio de bilhete acima da média geral",
+            "Em quais voos o preço médio dos bilhetes vendidos supera o preço médio de TODOS os bilhetes da base?",
+            "Subconsulta escalar correlacionada · AVG",
+            """
+            SELECT v.num_voo, v.data_voo,
+                   (SELECT ROUND(AVG(b.preco), 2)
+                    FROM Bilhete b WHERE b.fk_Voo_num_voo = v.num_voo) AS preco_medio_voo
+            FROM Voo v
+            WHERE (SELECT AVG(b.preco) FROM Bilhete b WHERE b.fk_Voo_num_voo = v.num_voo)
+                  > (SELECT AVG(preco) FROM Bilhete)
+            ORDER BY preco_medio_voo DESC
+            """),
+
+        new Consulta(14,
+            "Bilhetes sem nenhuma bagagem despachada",
+            "Quais bilhetes vendidos não têm nenhuma bagagem registrada?",
+            "Subconsulta correlacionada · NOT EXISTS",
+            """
+            SELECT b.cod_bilhete, CONCAT(p.primeiro_nome, ' ', p.sobrenome) AS passageiro,
+                   v.num_voo, v.data_voo
+            FROM Bilhete b
+            JOIN Passageiro p ON p.cpf = b.fk_Passageiro_cpf
+            JOIN Voo v ON v.num_voo = b.fk_Voo_num_voo
+            WHERE NOT EXISTS (
+                SELECT 1 FROM Bagagem g WHERE g.fk_Bilhete_cod_bilhete = b.cod_bilhete
+            )
+            ORDER BY v.data_voo, b.cod_bilhete
             """)
     );
 

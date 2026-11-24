@@ -51,8 +51,17 @@ public class RecursosHandler implements HttpHandler {
         Campos campos = new Campos(valores);
         String nome = campos.obrigatorio("nome", "Recurso");
         String sql = switch (nome) {
-            case "vw_voo_completo" -> "SELECT * FROM vw_voo_completo";
-            case "vw_passageiro_resumo" -> "SELECT * FROM vw_passageiro_resumo";
+            case "vw_voo_completo" -> """
+                SELECT * FROM vw_voo_completo
+                WHERE data_voo >= COALESCE(?, data_voo) AND data_voo <= COALESCE(?, data_voo)
+                  AND (? IS NULL OR cod_cia = ?) AND (? IS NULL OR status = ?)
+                ORDER BY data_voo, hora_partida, num_voo
+                """;
+            case "vw_passageiro_resumo" -> """
+                SELECT * FROM vw_passageiro_resumo
+                WHERE (? IS NULL OR cpf = ?)
+                ORDER BY total_gasto DESC, cpf
+                """;
             case "atualizar_status_voo" -> "CALL atualizar_status_voo(?, ?)";
             case "verificar_conexoes_passageiros" -> "CALL verificar_conexoes_passageiros()";
             case "calcular_duracao_voo" -> "SELECT calcular_duracao_voo(?) AS duracao_minutos";
@@ -73,8 +82,28 @@ public class RecursosHandler implements HttpHandler {
                     }
                 }
             }
-            try (PreparedStatement ps = sql.startsWith("CALL") ? con.prepareCall(sql) : con.prepareStatement(sql)) {
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
                 if (temVoo) ps.setInt(1, voo);
+                if (nome.equals("vw_voo_completo")) {
+                    String inicio = campos.data("inicio", "Data inicial", false);
+                    String fim = campos.data("fim", "Data final", false);
+                    if (inicio != null && fim != null && inicio.compareTo(fim) > 0) {
+                        throw ApiException.invalido("A data inicial deve ser anterior ou igual à data final.");
+                    }
+                    String cia = campos.texto("companhia", "Companhia", false, 10);
+                    String status = campos.texto("status", "Status", false, 20);
+                    String[] filtros = {inicio, fim, cia, cia, status, status};
+                    for (int i = 0; i < filtros.length; i++) ps.setString(i + 1, filtros[i]);
+                }
+                if (nome.equals("vw_passageiro_resumo")) {
+                    String cpf = campos.opcional("cpf");
+                    if (cpf != null) {
+                        cpf = cpf.replace(".", "").replace("-", "");
+                        if (!cpf.matches("[0-9]{11}")) throw ApiException.invalido("O CPF deve ter 11 dígitos.");
+                    }
+                    ps.setString(1, cpf);
+                    ps.setString(2, cpf);
+                }
                 if (nome.equals("atualizar_status_voo")) {
                     String status = campos.obrigatorio("status", "Status");
                     if (!List.of("Confirmado", "Cancelado").contains(status)) throw ApiException.invalido("Status inválido.");

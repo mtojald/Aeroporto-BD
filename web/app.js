@@ -281,10 +281,99 @@ const voos = (() => {
 // DASHBOARD 
 // =====================================================================
 
+function painelFrota({ aba, novo, campos, colunas }) {
+  const rota = `/api/${aba}`;
+  const titulo = el('h2', {}, novo);
+  const tabela = el('tbody');
+  const busca = el('input', { id: `busca-${aba}`, type: 'search', class: 'busca', 'aria-label': 'Buscar registros', placeholder: 'Buscar registros…' });
+  tabela.id = `tabela-${aba}`;
+  const acoes = el('div', { class: 'acoes' },
+    el('button', { type: 'submit', class: 'botao primario' }, 'Salvar'),
+    el('button', { type: 'button', class: 'botao', 'data-cancelar': '' }, 'Cancelar edição'));
+  const form = el('form', { class: 'formulario' }, ...campos.map(([nome, rotulo, atributos]) =>
+    el('label', {}, rotulo, el(nome === 'companhia' ? 'select' : 'input', { name: nome, ...atributos }))), acoes);
+  document.getElementById(`aba-${aba}`).replaceChildren(
+    el('div', { class: 'cartao' }, titulo, form),
+    el('div', { class: 'cartao' },
+      el('div', { class: 'cabecalho-tabela' }, el('h2', {}, colunas.titulo), busca),
+      el('div', { class: 'tabela-rolagem' }, el('table', {},
+        el('thead', {}, el('tr', {}, ...colunas.campos.map(([, texto]) => el('th', { scope: 'col' }, texto)), el('th', { scope: 'col' }, 'Ações'))), tabela))));
+  ligarBusca(busca.id, tabela.id);
+
+  const atualizarLista = () => carregar().catch(e => avisar('A listagem não pôde ser atualizada: ' + e.message, true));
+  const controle = controlarFormulario({
+    form, titulo, chave: 'codigo', textoNovo: novo, textoEditar: id => `Editando ${id}`,
+    async aoSalvar(dados, id) {
+      const resposta = await api(id ? 'PUT' : 'POST', id ? `${rota}/${encodeURIComponent(id)}` : rota, dados);
+      await atualizarLista();
+      return resposta;
+    }
+  });
+
+  async function excluir(registro) {
+    if (!confirm(`Excluir o registro ${registro.codigo}?`)) return;
+    try {
+      const resposta = await api('DELETE', `${rota}/${encodeURIComponent(registro.codigo)}`);
+      controle.modoNovo();
+      avisar(resposta.mensagem);
+      await atualizarLista();
+    } catch (e) { avisar(e.message, true); }
+  }
+
+  async function carregar() {
+    const select = form.elements.companhia;
+    const [registros, companhias] = await Promise.all([
+      api('GET', rota), select ? api('GET', '/api/companhias') : []
+    ]);
+    if (select) {
+      const anterior = select.value;
+      select.replaceChildren(el('option', { value: '' }, 'Selecione uma companhia'),
+        ...companhias.map(c => el('option', { value: c.codigo }, c.nome)));
+      if (companhias.some(c => c.codigo === anterior)) select.value = anterior;
+    }
+    tabela.replaceChildren(...(registros.length ? registros.map(r => el('tr', {},
+      ...colunas.campos.map(([chave]) => el('td', {}, r[chave] ?? '—')),
+      botoesLinha(() => controle.editar(r, r.codigo), () => excluir(r)))) :
+      [linhaVazia(colunas.campos.length + 1, 'Nenhum registro cadastrado.')]));
+    busca.dispatchEvent(new Event('input'));
+  }
+  return { carregar };
+}
+
+const codigoFrota = ['codigo', 'Código*', { maxlength: 10, required: '', pattern: '[A-Za-z0-9_-]+' }];
+const companhias = painelFrota({
+  aba: 'companhias', novo: 'Nova companhia',
+  campos: [codigoFrota, ['nome', 'Nome*', { maxlength: 100, required: '' }]],
+  colunas: { titulo: 'Companhias cadastradas', campos: [['codigo', 'Código'], ['nome', 'Nome']] }
+});
+const aeronaves = painelFrota({
+  aba: 'aeronaves', novo: 'Nova aeronave',
+  campos: [codigoFrota, ['modelo', 'Modelo', { maxlength: 50 }],
+    ['capacidade', 'Capacidade', { type: 'number', min: 1, max: 299 }],
+    ['ano', 'Ano de fabricação', { type: 'number' }], ['companhia', 'Companhia*', { required: '' }]],
+  colunas: { titulo: 'Aeronaves cadastradas', campos: [['codigo', 'Código'], ['modelo', 'Modelo'],
+    ['capacidade', 'Capacidade'], ['ano', 'Ano'], ['nome_companhia', 'Companhia']] }
+});
+
 const dashboard = (() => {
+  const filtros = document.getElementById('filtros-dashboard');
+  const vazio = document.getElementById('vazio-dashboard');
+  let versao = 0;
+  filtros.addEventListener('submit', ev => {
+    ev.preventDefault();
+    atualizar();
+  });
+  filtros.addEventListener('reset', ev => {
+    ev.preventDefault();
+    for (const campo of filtros.querySelectorAll('input, select')) campo.value = '';
+    atualizar();
+  });
+
   const graficos = {}; // guarda os gráficos para destruir antes de redesenhar
 
   const moeda = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const numero = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
+  const moedaOuTraco = v => v == null ? '—' : moeda(v);
   const paleta = ['#238780', '#deb56a', '#6c94b8', '#c77881', '#9591bd', '#69b3a2', '#b6c7d5'];
 
   function desenhar(id, tipo, rotulos, valores, { legenda = false, cor = null, opcoes = {} } = {}) {
@@ -302,17 +391,39 @@ const dashboard = (() => {
   }
 
   async function carregar() {
+    const requisicao = ++versao;
     try {
-      const d = await api('GET', '/api/dashboard');
+      const parametros = new URLSearchParams(new FormData(filtros));
+      const d = await api('GET', '/api/dashboard?' + parametros);
+      if (requisicao !== versao) return;
+      const listas = [
+        [filtros.elements.companhia, d.companhias, 'cod_cia', 'nome', 'Todas'],
+        [filtros.elements.status, d.statusDisponiveis, 'status', 'status', 'Todos']
+      ];
+      for (const [select, itens, chave, rotulo, geral] of listas) {
+        const atual = select.value;
+        select.replaceChildren(el('option', { value: '' }, geral),
+          ...itens.map(i => el('option', { value: i[chave] }, i[rotulo])));
+        if (atual && !itens.some(i => i[chave] === atual)) {
+          select.append(el('option', { value: atual }, atual));
+        }
+        select.value = atual;
+      }
       Chart.defaults.font.family = 'Segoe UI, sans-serif';
       Chart.defaults.borderColor = '#edf0f5';
       Chart.defaults.color = getComputedStyle(document.body).getPropertyValue('--texto-suave') || '#5d6b7c';
 
       // indicadores (cards)
       const i = d.indicadores;
+      const filtrado = [...parametros.values()].some(Boolean);
       document.getElementById('indicadores').replaceChildren(
-        cartao('Voos', i.voos), cartao('Passageiros', i.passageiros),
-        cartao('Aeronaves', i.aeronaves), cartao('Receita total', moeda(i.receita)));
+        cartao('Voos', i.voos),
+        cartao(filtrado ? 'Passageiros com bilhete' : 'Passageiros cadastrados', i.passageiros),
+        cartao(filtrado ? 'Aeronaves nos voos' : 'Aeronaves cadastradas', i.aeronaves),
+        cartao('Bilhetes', i.bilhetes), cartao('Receita de bilhetes', moeda(i.receita)),
+        cartao('Preço médio do bilhete', moedaOuTraco(i.precoMedio)),
+        cartao('Voos cancelados', i.cancelamentos == null ? '—' : numero.format(i.cancelamentos) + '%'));
+      vazio.hidden = i.voos !== 0;
 
       // gráficos de séries
       desenhar('grafico-status', 'doughnut', d.voosPorStatus.rotulos, d.voosPorStatus.valores, { legenda: true });
@@ -322,15 +433,23 @@ const dashboard = (() => {
       desenhar('grafico-ocupacao', 'bar', d.ocupacaoPorVoo.rotulos, d.ocupacaoPorVoo.valores,
                { cor: paleta[1], opcoes: { scales: { y: { beginAtZero: true } } } });
 
+      desenhar('grafico-classe', 'bar', d.bilhetesPorClasse.rotulos, d.bilhetesPorClasse.valores,
+               { cor: paleta[3], opcoes: { scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+
       // estatística descritiva + histograma do preço
       const e = d.estatisticasPreco;
       document.getElementById('estatisticas').replaceChildren(
-        cartao('n (bilhetes)', e.n), cartao('Média', moeda(e.media ?? 0)), cartao('Mediana', moeda(e.mediana ?? 0)),
-        cartao('Desvio padrão', moeda(e.desvioPadrao ?? 0)), cartao('Mínimo', moeda(e.minimo ?? 0)), cartao('Máximo', moeda(e.maximo ?? 0)));
+        cartao('Bilhetes com preço', e.n), cartao('Média', moedaOuTraco(e.media)), cartao('Mediana', moedaOuTraco(e.mediana)),
+        cartao('Moda', !e.n ? '—' : e.modas.length ? e.modas.map(moeda).join(' · ') : 'Sem moda'),
+        cartao('Variância (R$²)', e.variancia == null ? '—' : numero.format(e.variancia)),
+        cartao('Desvio padrão', moedaOuTraco(e.desvioPadrao)),
+        cartao('Mínimo', moedaOuTraco(e.minimo)), cartao('Máximo', moedaOuTraco(e.maximo)));
       desenhar('grafico-histograma', 'bar', d.histogramaPreco.rotulos, d.histogramaPreco.valores,
                { cor: paleta[2], opcoes: { scales: { y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Frequência' } },
                                                     x: { title: { display: true, text: 'Faixa de preço' } } } } });
     } catch (e) {
+      if (requisicao !== versao) return;
+      vazio.hidden = true;
       document.getElementById('indicadores').replaceChildren();
       document.getElementById('estatisticas').replaceChildren();
       Object.values(graficos).forEach(g => g.destroy());
@@ -345,6 +464,37 @@ const dashboard = (() => {
 // =====================================================================
 // CONSULTAS  (GET /api/consultas -> texto do SQL + resultado)
 // =====================================================================
+
+function tabelaConsultavel({ colunas, linhas }) {
+  const corpo = el('tbody');
+  const contador = el('span', { class: 'suave', role: 'status' });
+  const busca = el('input', { type: 'search', class: 'busca', placeholder: 'Filtrar resultados…' });
+  const colunaData = colunas.indexOf('data_voo');
+  const inicio = el('input', { type: 'date' });
+  const fim = el('input', { type: 'date' });
+  const filtros = el('div', { class: 'formulario filtros-consulta' }, el('label', {}, 'Busca', busca));
+  if (colunaData >= 0) {
+    filtros.append(el('label', {}, 'Voo a partir de', inicio), el('label', {}, 'Voo até', fim));
+  }
+
+  function mostrar() {
+    const termo = busca.value.trim().toLocaleLowerCase('pt-BR');
+    const selecionadas = linhas.filter(linha => {
+      if ((inicio.value && (!linha[colunaData] || linha[colunaData] < inicio.value))
+          || (fim.value && (!linha[colunaData] || linha[colunaData] > fim.value))) return false;
+      return linha.some(valor => String(valor ?? '').toLocaleLowerCase('pt-BR').includes(termo));
+    });
+    contador.textContent = `${selecionadas.length} de ${linhas.length} resultados`;
+    corpo.replaceChildren(...(selecionadas.length
+      ? selecionadas.map(linha => el('tr', {}, ...linha.map(valor => el('td', {}, valor ?? '—'))))
+      : [linhaVazia(colunas.length, 'Nenhum resultado.')]));
+  }
+  for (const campo of [busca, inicio, fim]) campo.addEventListener('input', mostrar);
+  mostrar();
+  return el('div', {}, filtros, contador,
+    el('div', { class: 'tabela-rolagem' }, el('table', {},
+      el('thead', {}, el('tr', {}, ...colunas.map(nome => el('th', { scope: 'col' }, nome)))), corpo)));
+}
 
 const consultas = (() => {
   async function carregar() {
@@ -363,11 +513,7 @@ const consultas = (() => {
   function cartaoConsulta(c) {
     const resultado = c.erro
       ? el('p', { class: 'vazio' }, `Erro: ${c.erro}`)
-      : el('div', { class: 'tabela-rolagem' }, el('table', {},
-          el('thead', {}, el('tr', {}, ...c.colunas.map((n) => el('th', {}, n)))),
-          el('tbody', {}, ...(c.linhas.length
-            ? c.linhas.map((l) => el('tr', {}, ...l.map((v) => el('td', {}, v ?? '—'))))
-            : [linhaVazia(c.colunas.length, 'Nenhum resultado')]))));
+      : tabelaConsultavel(c);
 
     return el('details', { class: 'cartao consulta' },
       el('summary', {}, el('strong', {}, `${String(c.id).padStart(2, '0')}. ${c.titulo}`), el('span', { class: 'contador' }, c.linhas ? `${c.linhas.length} linha(s)` : '')),
@@ -414,6 +560,18 @@ const recursos = (() => {
     }
     if (r.nome === 'atualizar_status_voo') form.append(el('label', {}, 'Novo status', el('select', { name: 'status' },
       el('option', { value: 'Confirmado' }, 'Confirmado'), el('option', { value: 'Cancelado' }, 'Cancelado'))));
+    if (r.nome === 'vw_voo_completo') {
+      form.append(
+        el('label', {}, 'Data inicial', el('input', { name: 'inicio', type: 'date' })),
+        el('label', {}, 'Data final', el('input', { name: 'fim', type: 'date' })),
+        el('label', {}, 'Código da companhia', el('input', { name: 'companhia', maxlength: 10 })),
+        el('label', {}, 'Status', el('select', { name: 'status' },
+          el('option', { value: '' }, 'Todos'), el('option', { value: 'Confirmado' }, 'Confirmado'),
+          el('option', { value: 'Cancelado' }, 'Cancelado'))));
+    }
+    if (r.nome === 'vw_passageiro_resumo') {
+      form.append(el('label', {}, 'CPF do passageiro', el('input', { name: 'cpf', inputmode: 'numeric', maxlength: 14 })));
+    }
     const botao = el('button', { type: 'submit', class: 'botao primario' }, r.tipo === 'triggers' ? 'Verificar no banco' : r.tipo === 'views' ? 'Visualizar dados' : r.nome === 'atualizar_status_voo' ? 'Atualizar status' : 'Executar');
     const acoes = el('div', { class: 'acoes' }, botao);
     async function executar(nome, valores, origem) {
@@ -465,6 +623,8 @@ const recursos = (() => {
 const carregadores = {
   passageiros: passageiros.carregar,
   voos: voos.carregar,
+  companhias: companhias.carregar,
+  aeronaves: aeronaves.carregar,
   dashboard: dashboard.carregar,
   consultas: consultas.carregar,
   recursos: recursos.carregar,
@@ -473,7 +633,9 @@ const paginas = {
   dashboard: ['Visão geral', 'Indicadores, desempenho dos voos e estatística dos bilhetes.'],
   passageiros: ['Passageiros', 'Cadastre passageiros e mantenha os dados de contato atualizados.'],
   voos: ['Voos', 'Organize rotas, horários, aeronaves e equipes de cada operação.'],
-  consultas: ['Consultas', 'Explore as 10 análises de dados disponíveis no projeto.'],
+  companhias: ['Companhias', 'Gerencie as companhias aéreas cadastradas.'],
+  aeronaves: ['Aeronaves', 'Gerencie a frota e a companhia vinculada a cada aeronave.'],
+  consultas: ['Consultas', 'Explore as análises de dados disponíveis no projeto.'],
   recursos: ['Recursos do banco', 'Views, procedures, triggers e funções em um só lugar.']
 };
 let abaAtual = 'dashboard';

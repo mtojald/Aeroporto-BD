@@ -3,6 +3,7 @@ package aeroporto;
 import aeroporto.db.Database;
 import aeroporto.db.ErroSql;
 import aeroporto.web.OpcoesHandler;
+import aeroporto.web.FrotaHandler;
 import aeroporto.web.PassageiroHandler;
 import aeroporto.web.StaticHandler;
 import aeroporto.web.VooHandler;
@@ -26,6 +27,8 @@ public class Main {
         HttpServer server = HttpServer.create(new InetSocketAddress(porta), 0);
         // API (JSON)
         server.createContext("/api/passageiros", new PassageiroHandler());
+        server.createContext("/api/companhias", new FrotaHandler(false));
+        server.createContext("/api/aeronaves", new FrotaHandler(true));
         server.createContext("/api/voos", new VooHandler());
         server.createContext("/api/opcoes", new OpcoesHandler());
         server.createContext("/api/consultas", new ConsultaHandler());

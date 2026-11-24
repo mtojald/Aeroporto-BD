@@ -13,13 +13,10 @@
 
 ## Funcionalidades
 
-Interface web com 4 abas:
-
-- **Passageiros:** cadastrar, alterar, excluir e listar
-- **Voos:** cadastrar, alterar, excluir e listar
-- **Dashboard:** indicadores, gráficos e estatística descritiva (média, mediana, desvio padrão e histograma)
-- **Consultas:** 10 consultas SQL com o resultado ao vivo
-
+- CRUD de passageiros, voos, companhias aéreas e aeronaves.
+- Dashboard com seis gráficos, indicadores e estatística dos preços com filtros por data do voo, companhia e status.
+- 14 consultas das etapas 03 e 04 com resultados filtráveis.
+- Views com parâmetros, execução de funções e procedures e histórico de status produzido por trigger.
 
 ## Como executar
 
@@ -28,6 +25,11 @@ Interface web com 4 abas:
 1. Rode no MySQL, nesta ordem:
    - `database/migrations.sql` (cria o banco e as tabelas)
    - `database/queries.sql` (insere os dados)
+   - `database/indices.sql` (cria os índices adicionais)
+   - `database/views.sql` (cria as duas views)
+   - Selecione o banco `aeroporto` e execute `database/functions.sql`, `database/Procedures.sql` e `database/Triggers.sql`, nessa ordem.
+
+   Em um banco existente, aplique somente os scripts dos objetos ainda ausentes. Os scripts de criação de tabelas e carga inicial são para a instalação inicial.
 2. Copie `config.properties.example` para `config.properties` e coloque o usuário e a senha do seu MySQL.
 3. Compile e execute:
 
@@ -48,8 +50,9 @@ Interface web com 4 abas:
 ## Estrutura
 
 ```
-database/   migrations.sql, queries.sql, consultas.sql (as 10 consultas)
+database/   migrations.sql, queries.sql, consultas.sql (as 10 consultas iniciais)
             indices.sql, consultas_avancadas.sql, views.sql
+            functions.sql, Procedures.sql, Triggers.sql
 src/        código Java (db, dao, web)
 web/        interface (index.html, app.js, CSS e Chart.js)
 ```
@@ -66,3 +69,4 @@ Usamos IA como apoio para revisar o modelo, rascunhar as consultas e o dashboard
 | 2. Tabelas e dados | `database/migrations.sql` e `database/queries.sql` |
 | 3. Interface e dashboard | `src/`, `web/` e `database/consultas.sql` |
 | 4. Índices, consultas e views | `database/indices.sql`, `consultas_avancadas.sql`, `views.sql` |
+| 5. Rotinas e triggers | `database/functions.sql`, `Procedures.sql`, `Triggers.sql` |

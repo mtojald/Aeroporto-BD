@@ -194,3 +194,21 @@
 
 
 }
+
+.filtros-dashboard {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr));
+  align-items: end;
+}
+
+.filtros-dashboard .acoes {
+  grid-column: 1 / -1;
+}
+
+#aba-dashboard .grade-graficos .cartao {
+  min-width: 0;
+}
+
+.filtros-consulta {
+  margin: 16px 0 8px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}

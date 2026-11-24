@@ -16,6 +16,8 @@
       <button class="aba" data-aba="dashboard"><span aria-hidden="true">◫</span> Visão geral</button>
       <button class="aba" data-aba="passageiros"><span aria-hidden="true">◎</span> Passageiros</button>
       <button class="aba" data-aba="voos"><span aria-hidden="true">✈</span> Voos</button>
+      <button class="aba" data-aba="companhias"><span aria-hidden="true">▤</span> Companhias</button>
+      <button class="aba" data-aba="aeronaves"><span aria-hidden="true">▱</span> Aeronaves</button>
       <button class="aba" data-aba="consultas"><span aria-hidden="true">⌕</span> Consultas</button>
       <button class="aba" data-aba="recursos"><span aria-hidden="true">▤</span> Recursos do banco</button>
     </nav>
@@ -27,20 +29,33 @@
     <div id="estado-pagina" role="status" aria-live="polite" hidden></div>
     <!-- ============================ DASHBOARD ============================ -->
     <section id="aba-dashboard" class="painel" hidden>
+      <form id="filtros-dashboard" class="cartao formulario filtros-dashboard">
+        <label>Data inicial do voo <input type="date" name="inicio"></label>
+        <label>Data final do voo <input type="date" name="fim"></label>
+        <label>Companhia <select name="companhia"><option value="">Todas</option></select></label>
+        <label>Status <select name="status"><option value="">Todos</option></select></label>
+        <div class="acoes">
+          <button type="submit" class="botao primario">Aplicar filtros</button>
+          <button type="reset" class="botao">Limpar</button>
+        </div>
+      </form>
+      <p id="vazio-dashboard" class="vazio cartao" role="status" hidden>Nenhum voo encontrado para os filtros selecionados.</p>
       <div class="indicadores" id="indicadores"></div>
 
       <div class="grade-graficos">
-        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-status" id="grafico-status"></canvas></div></div>
-        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-receita" id="grafico-receita"></canvas></div></div>
-        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-dia" id="grafico-dia"></canvas></div></div>
-        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas role="img" aria-label="grafico-ocupacao" id="grafico-ocupacao"></canvas></div></div>
+        <div class="cartao"><h2>Voos por status</h2><div class="caixa-grafico"><canvas role="img" aria-label="Distribuição de voos por status" id="grafico-status"></canvas></div></div>
+        <div class="cartao"><h2>Receita por companhia (R$)</h2><div class="caixa-grafico"><canvas role="img" aria-label="Receita de bilhetes por companhia" id="grafico-receita"></canvas></div></div>
+        <div class="cartao"><h2>Voos por dia</h2><div class="caixa-grafico"><canvas role="img" aria-label="Quantidade de voos por dia" id="grafico-dia"></canvas></div></div>
+        <div class="cartao"><h2>Ocupação por voo (%)</h2><div class="caixa-grafico"><canvas role="img" aria-label="Taxa de ocupação por voo" id="grafico-ocupacao"></canvas></div></div>
       </div>
+
+      <div class="cartao"><h2>Bilhetes por classe</h2><div class="caixa-grafico"><canvas role="img" aria-label="Quantidade de bilhetes por classe" id="grafico-classe"></canvas></div></div>
 
       <div class="cartao">
         <h2>Estatística descritiva — preço dos bilhetes</h2>
         <div class="indicadores pequeno" id="estatisticas"></div>
-        <div class="caixa-grafico alta"><canvas role="img" aria-label="grafico-histograma" id="grafico-histograma"></canvas></div>
-        <p class="suave">Histograma com classes de mesma amplitude (nº de classes = ⌈√n⌉, entre 3 e 8).</p>
+        <div class="caixa-grafico alta"><canvas role="img" aria-label="Distribuição dos preços dos bilhetes" id="grafico-histograma"></canvas></div>
+        <p class="suave">A variância e o desvio padrão são amostrais. O histograma agrupa preços por faixa.</p>
       </div>
     </section>
 
@@ -167,6 +182,8 @@
         </div>
       </div>
     </section>
+    <section id="aba-companhias" class="painel" hidden></section>
+    <section id="aba-aeronaves" class="painel" hidden></section>
     <section id="aba-recursos" class="painel" hidden>
       <div class="cartao introducao"><div><h2>Recursos do banco</h2><p class="suave">Consulte as views, execute as procedures e acompanhe as regras automáticas.</p></div><span class="selo" id="contador-recursos"></span></div>
       <div class="filtros" role="group" aria-label="Filtrar recursos">

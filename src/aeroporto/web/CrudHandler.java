@@ -30,6 +30,10 @@ public abstract class CrudHandler implements HttpHandler {
         throw naoSuportado();
     }
 
+    protected Object listar(HttpExchange ex) throws SQLException {
+        return listar();
+    }
+
     protected String inserir(Map<String, String> campos) throws SQLException {
         throw naoSuportado();
     }
@@ -50,7 +54,7 @@ public abstract class CrudHandler implements HttpHandler {
             switch (metodo) {
                 case "GET" -> {
                     semId(id);
-                    Http.enviarJson(ex, 200, listar());
+                    Http.enviarJson(ex, 200, listar(ex));
                 }
                 case "POST" -> {
                     semId(id);
